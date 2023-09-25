@@ -10,10 +10,10 @@ Future<void> main() async {
       options: kIsWeb
           ? const FirebaseOptions(
               apiKey: "AIzaSyAweCHAdtTnW7QjPDmPF73HqiO_mCIHaF4",
-              projectId: "nutri-gabay.firebaseapp",
+              projectId: "nutri-gabay",
               messagingSenderId: "376018937615",
               appId: "1:376018937615:web:544241051f29dbccd6c07a",
-              // storageBucket: 'nutri-gabay.appspot.com',
+              storageBucket: 'nutri-gabay.appspot.com',
             )
           : null);
 
