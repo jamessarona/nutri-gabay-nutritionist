@@ -15,6 +15,8 @@ class Doctor {
   final String specialization;
   final String image;
   final String file;
+  final String about;
+  final String specialties;
 
   Doctor({
     required this.uid,
@@ -26,6 +28,8 @@ class Doctor {
     required this.specialization,
     required this.image,
     required this.file,
+    required this.about,
+    required this.specialties,
   });
 
   factory Doctor.fromJson(Map<String, dynamic> json) => Doctor(
@@ -38,6 +42,8 @@ class Doctor {
         specialization: json["specialization"],
         image: json["image"],
         file: json["file"],
+        about: json["about"],
+        specialties: json["specialties"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -50,6 +56,8 @@ class Doctor {
         "specialization": specialization,
         "image": image,
         "file": file,
+        "about": about,
+        "specialties": specialties,
       };
 
   factory Doctor.fromFirestore(
@@ -67,6 +75,8 @@ class Doctor {
       specialization: data?["specialization"],
       image: data?["image"],
       file: data?["file"],
+      about: data?["about"],
+      specialties: data?["specialties"],
     );
   }
 
@@ -80,6 +90,8 @@ class Doctor {
       "specialization": specialization,
       "image": image,
       "file": file,
+      "about": about,
+      "specialties": specialties,
     };
   }
 }

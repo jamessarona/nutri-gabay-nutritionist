@@ -4,7 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:nutri_gabay_nutritionist/services/baseauth.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/appointment_page.dart';
-import 'package:nutri_gabay_nutritionist/views/ui/dashboard_page.dart';
+import 'package:nutri_gabay_nutritionist/views/ui/profile_page.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/patient_list_page.dart';
 import 'package:universal_html/html.dart' as html;
 
@@ -89,25 +89,25 @@ class _MainPageState extends State<MainPage> {
             ),
             items: [
               SideMenuItem(
-                title: 'Dashboard',
+                title: 'My Profile',
                 onTap: (index, _) {
                   sideMenu.changePage(index);
                 },
-                icon: const Icon(FontAwesomeIcons.userDoctor),
+                icon: const Icon(FontAwesomeIcons.user),
               ),
               SideMenuItem(
                 title: 'Patients',
                 onTap: (index, _) {
                   sideMenu.changePage(index);
                 },
-                icon: const Icon(FontAwesomeIcons.userInjured),
+                icon: const Icon(FontAwesomeIcons.clipboard),
               ),
               SideMenuItem(
-                title: 'Appointments',
+                title: 'Appointment Request',
                 onTap: (index, _) {
                   sideMenu.changePage(index);
                 },
-                icon: const Icon(FontAwesomeIcons.clipboardList),
+                icon: const Icon(FontAwesomeIcons.calendarDays),
               ),
             ],
           ),
@@ -115,7 +115,7 @@ class _MainPageState extends State<MainPage> {
             child: PageView(
               controller: pageController,
               children: const [
-                DashboardPage(),
+                ProfilePage(),
                 PatientListPage(),
                 AppointmentPage(),
               ],
