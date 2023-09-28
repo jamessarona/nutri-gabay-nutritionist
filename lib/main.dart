@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'NutriGabay Nutritionist',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(primarySwatch: Colors.lightGreen),
       home: Root(
         auth: FireBaseAuth(),
       ),
