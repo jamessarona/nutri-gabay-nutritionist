@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
-import 'package:nutri_gabay_nutritionist/views/shared/custom_buttons.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_patient_tile.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_text_fields.dart';
 
@@ -117,12 +116,6 @@ class _PatientListPageState extends State<PatientListPage> {
             ),
           ],
         ),
-      ),
-      floatingActionButton: SizedBox(
-        height: 35,
-        width: 80,
-        child: UserCredentialPrimaryButton(
-            onPress: () {}, label: 'Next', labelSize: 11),
       ),
     );
   }

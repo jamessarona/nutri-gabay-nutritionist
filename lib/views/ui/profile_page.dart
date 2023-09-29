@@ -250,7 +250,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                         });
                                                       },
                                                       label: !isEditable
-                                                          ? 'Edit Profile'
+                                                          ? 'Edit'
                                                           : 'Save',
                                                       labelSize: 11),
                                             ),

@@ -10,6 +10,10 @@ class AppointmentPage extends StatefulWidget {
 class _AppointmentPageState extends State<AppointmentPage> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Container(
+      height: double.infinity,
+      width: double.infinity,
+      color: Colors.grey.shade100,
+    );
   }
 }

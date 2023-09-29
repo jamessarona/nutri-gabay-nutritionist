@@ -155,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 20),
                   SizedBox(
-                    width: 400,
+                    width: screenSize.width < 500 ? 300 : 400,
                     child: Text(
                       "Password",
                       style: appstyle(
@@ -167,7 +167,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 10),
                   SizedBox(
-                    width: 400,
+                    width: screenSize.width < 500 ? 300 : 400,
                     child: UserCredentialTextField(
                       controller: _password,
                       label: "",
