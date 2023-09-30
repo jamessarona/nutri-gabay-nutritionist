@@ -21,6 +21,8 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   late Size screenSize;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _name = TextEditingController();
+  final TextEditingController _specialization = TextEditingController();
   final TextEditingController _aboutMe = TextEditingController();
   final TextEditingController _specialties = TextEditingController();
 
@@ -40,6 +42,8 @@ class _ProfilePageState extends State<ProfilePage> {
             );
     final docSnap = await ref.get();
     doctor = docSnap.data()!;
+    _name.text = doctor!.name;
+    _specialization.text = doctor!.specialization;
     _aboutMe.text = doctor!.about;
     _specialties.text = doctor!.specialties;
     isEditable = false;
@@ -51,6 +55,8 @@ class _ProfilePageState extends State<ProfilePage> {
     final collection = FirebaseFirestore.instance.collection('doctor');
 
     await collection.doc(uid).update({
+      "name": _name.text,
+      "specialization": _specialization.text,
       "about": _aboutMe.text,
       "specialties": _specialties.text,
     }).whenComplete(() {
@@ -156,7 +162,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           Container(
                             margin: EdgeInsets.symmetric(
                                 horizontal: screenSize.width * 0.01),
-                            height: 150,
+                            height: 180,
                             width: double.infinity,
                             child: Card(
                               child: Padding(
@@ -171,10 +177,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Container(
-                                          height: 80,
-                                          width: 80,
+                                          height: 120,
+                                          width: 120,
                                           padding: const EdgeInsets.all(3),
                                           decoration: BoxDecoration(
                                             borderRadius:
@@ -209,52 +217,136 @@ class _ProfilePageState extends State<ProfilePage> {
                                           ),
                                         ),
                                         const SizedBox(width: 10),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text.rich(
-                                              TextSpan(
-                                                children: [
-                                                  TextSpan(
-                                                    text: '${doctor!.name}\n',
-                                                    style: appstyle(
-                                                        18,
-                                                        Colors.black,
-                                                        FontWeight.bold),
-                                                  ),
-                                                  TextSpan(
-                                                    text:
-                                                        doctor!.specialization,
-                                                    style: appstyle(
-                                                        13,
-                                                        Colors.grey,
-                                                        FontWeight.normal),
-                                                  ),
-                                                ],
+                                        SizedBox(
+                                          height: 120,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              !isEditable
+                                                  ? Text.rich(
+                                                      TextSpan(
+                                                        children: [
+                                                          TextSpan(
+                                                            text:
+                                                                '${_name.text}\n',
+                                                            style: appstyle(
+                                                                18,
+                                                                Colors.black,
+                                                                FontWeight
+                                                                    .bold),
+                                                          ),
+                                                          TextSpan(
+                                                            text:
+                                                                _specialization
+                                                                    .text,
+                                                            style: appstyle(
+                                                                13,
+                                                                Colors.grey,
+                                                                FontWeight
+                                                                    .normal),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    )
+                                                  : SizedBox(
+                                                      height: 50,
+                                                      width: 200,
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          SizedBox(
+                                                            height: 20,
+                                                            width:
+                                                                double.infinity,
+                                                            child:
+                                                                TextFormField(
+                                                              controller: _name,
+                                                              style: appstyle(
+                                                                  18,
+                                                                  Colors.black,
+                                                                  FontWeight
+                                                                      .bold),
+                                                              cursorColor:
+                                                                  customColor,
+                                                              decoration:
+                                                                  const InputDecoration(
+                                                                enabledBorder:
+                                                                    InputBorder
+                                                                        .none,
+                                                                focusedBorder:
+                                                                    UnderlineInputBorder(
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                          color:
+                                                                              customColor),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              height: 5),
+                                                          SizedBox(
+                                                            height: 20,
+                                                            width:
+                                                                double.infinity,
+                                                            child:
+                                                                TextFormField(
+                                                              controller:
+                                                                  _specialization,
+                                                              style: appstyle(
+                                                                  18,
+                                                                  Colors.grey,
+                                                                  FontWeight
+                                                                      .normal),
+                                                              cursorColor:
+                                                                  customColor,
+                                                              decoration:
+                                                                  const InputDecoration(
+                                                                enabledBorder:
+                                                                    InputBorder
+                                                                        .none,
+                                                                focusedBorder:
+                                                                    UnderlineInputBorder(
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                          color:
+                                                                              customColor),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                              SizedBox(
+                                                height: 23,
+                                                width: 100,
+                                                child:
+                                                    UserCredentialPrimaryButton(
+                                                        onPress: () {
+                                                          if (isEditable) {
+                                                            saveChanges();
+                                                          }
+                                                          setState(() {
+                                                            isEditable =
+                                                                !isEditable;
+                                                          });
+                                                        },
+                                                        label: !isEditable
+                                                            ? 'Edit'
+                                                            : 'Save',
+                                                        labelSize: 11),
                                               ),
-                                            ),
-                                            const SizedBox(height: 18),
-                                            SizedBox(
-                                              height: 23,
-                                              width: 100,
-                                              child:
-                                                  UserCredentialPrimaryButton(
-                                                      onPress: () {
-                                                        if (isEditable) {
-                                                          saveChanges();
-                                                        }
-                                                        setState(() {
-                                                          isEditable =
-                                                              !isEditable;
-                                                        });
-                                                      },
-                                                      label: !isEditable
-                                                          ? 'Edit'
-                                                          : 'Save',
-                                                      labelSize: 11),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         )
                                       ],
                                     ),
