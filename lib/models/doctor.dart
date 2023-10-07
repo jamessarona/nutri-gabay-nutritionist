@@ -17,6 +17,8 @@ class Doctor {
   final String file;
   final String about;
   final String specialties;
+  final String status;
+  final String password;
 
   Doctor({
     required this.uid,
@@ -30,6 +32,8 @@ class Doctor {
     required this.file,
     required this.about,
     required this.specialties,
+    required this.status,
+    required this.password,
   });
 
   factory Doctor.fromJson(Map<String, dynamic> json) => Doctor(
@@ -44,6 +48,8 @@ class Doctor {
         file: json["file"],
         about: json["about"],
         specialties: json["specialties"],
+        status: json["status"],
+        password: json["password"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -58,6 +64,8 @@ class Doctor {
         "file": file,
         "about": about,
         "specialties": specialties,
+        "status": status,
+        "password": password,
       };
 
   factory Doctor.fromFirestore(
@@ -77,6 +85,8 @@ class Doctor {
       file: data?["file"],
       about: data?["about"],
       specialties: data?["specialties"],
+      status: data?["status"],
+      password: data?["password"],
     );
   }
 
@@ -92,6 +102,8 @@ class Doctor {
       "file": file,
       "about": about,
       "specialties": specialties,
+      "status": status,
+      "password": password,
     };
   }
 }

@@ -7,6 +7,7 @@ import 'package:nutri_gabay_nutritionist/services/baseauth.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_buttons.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_text_fields.dart';
+import 'package:nutri_gabay_nutritionist/views/ui/signup_page.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback? onSignIn;
@@ -28,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   String regEx =
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
 
-  late Doctor admin;
+  late Doctor doctor;
 
   void validation() async {
     String userUID;
@@ -52,17 +53,23 @@ class _LoginPageState extends State<LoginPage> {
           await collection.get().then(
             (querySnapshot) async {
               for (var docSnapshot in querySnapshot.docs) {
-                admin = docSnapshot.data();
+                doctor = docSnapshot.data();
 
-                try {
-                  userUID = await widget.auth
-                      .signInWithEmailAndPassword(admin.email, _password.text);
-                  // ignore: unnecessary_null_comparison
-                  if (userUID != null) {
-                    widget.onSignIn!();
+                if (doctor.status != 'Pending') {
+                  try {
+                    userUID = await widget.auth.signInWithEmailAndPassword(
+                        doctor.email, _password.text);
+                    // ignore: unnecessary_null_comparison
+                    if (userUID != null) {
+                      widget.onSignIn!();
+                    }
+                  } on FirebaseAuthException {
+                    loginMsg = 'Incorrect username or password';
                   }
-                } on FirebaseAuthException {
-                  loginMsg = 'Incorrect username or password';
+                } else {
+                  loginMsg = doctor.password == _password.text
+                      ? 'Registration is pending for approval'
+                      : 'Incorrect username or password';
                 }
               }
 
@@ -206,6 +213,33 @@ class _LoginPageState extends State<LoginPage> {
                       label: "Login",
                       labelSize: 15,
                     ),
+                  ),
+                  const SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Don't have an account?",
+                        style: appstyle(14, Colors.black, FontWeight.w500),
+                      ),
+                      const SizedBox(width: 20),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (ctx) => const SignUpPage(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "Create your account",
+                          style: appstyle(
+                              14,
+                              const Color.fromARGB(255, 28, 117, 190),
+                              FontWeight.w500),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
