@@ -14,6 +14,9 @@ class _AppointmentPageState extends State<AppointmentPage> {
       height: double.infinity,
       width: double.infinity,
       color: Colors.grey.shade100,
+      child: ListView(
+        children: [],
+      ),
     );
   }
 }
