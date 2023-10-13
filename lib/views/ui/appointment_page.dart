@@ -1,10 +1,14 @@
+import 'dart:html';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:nutri_gabay_nutritionist/models/appointment.dart';
 import 'package:nutri_gabay_nutritionist/models/doctor.dart';
 import 'package:nutri_gabay_nutritionist/models/patient.dart';
 import 'package:nutri_gabay_nutritionist/models/patient_nutrition.dart';
 import 'package:nutri_gabay_nutritionist/services/baseauth.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class AppointmentPage extends StatefulWidget {
   const AppointmentPage({super.key});
@@ -83,11 +87,12 @@ class _AppointmentPageState extends State<AppointmentPage> {
     return result;
   }
 
-  String getPatientNutritionInfoByField(String patientId, String field) {
+  String getPatientNutritionInfoByField(
+      String patientNutritionalId, String field) {
     String result = '';
     if (patientNutritions != null) {
       for (var patientNutrition in patientNutritions!) {
-        if (patientId == patientNutrition.data().uid) {
+        if (patientNutritionalId == patientNutrition.data().uid) {
           if (field == 'age') {
             result = patientNutrition.data().age.toStringAsFixed(0);
           } else if (field == 'birthdate') {
@@ -321,7 +326,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                       children: <TextSpan>[
                                         TextSpan(
                                           text:
-                                              '${getPatientNutritionInfoByField(data['patientId'], 'bmi')} - ',
+                                              '${getPatientNutritionInfoByField(data['patientNutritionalId'], 'bmi')} - ',
                                           style: appstyle(13, Colors.black,
                                               FontWeight.bold),
                                         ),
@@ -410,8 +415,33 @@ class _AppointmentPageState extends State<AppointmentPage> {
 
   Widget buildSchedules() {
     return Container(
+      height: 800,
       width: screenSize.width > 500 ? screenSize.width * 0.4 : double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+      ),
+      child: SfCalendar(
+        view: CalendarView.month,
+        dataSource: AppointmentSchedules(getAppointments()),
+        initialSelectedDate: DateTime.now(),
+      ),
     );
+  }
+
+  List<Appointment> getAppointments() {
+    List<Appointment> meetings = <Appointment>[];
+    final DateTime today = DateTime.now();
+    final DateTime startTime =
+        DateTime(today.year, today.month, today.day, 9, 0, 0);
+    final DateTime endTime =
+        DateTime(today.year, today.month, today.day, 13, 0, 0);
+    meetings.add(Appointment(
+        startTime: startTime,
+        endTime: endTime,
+        subject: 'Abc',
+        color: customColor));
+    return meetings;
   }
 
   @override
@@ -465,5 +495,11 @@ class _AppointmentPageState extends State<AppointmentPage> {
         ],
       ),
     );
+  }
+}
+
+class AppointmentSchedules extends CalendarDataSource {
+  AppointmentSchedules(List<Appointment> source) {
+    appointments = source;
   }
 }

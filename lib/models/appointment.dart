@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-Appointment appointmentFromJson(String str) =>
-    Appointment.fromJson(json.decode(str));
+Appointments appointmentFromJson(String str) =>
+    Appointments.fromJson(json.decode(str));
 
-String appointmentToJson(Appointment data) => json.encode(data.toJson());
+String appointmentToJson(Appointments data) => json.encode(data.toJson());
 
-class Appointment {
+class Appointments {
   final String id;
   final String dateRecorded;
   final String dateSchedule;
@@ -18,7 +18,7 @@ class Appointment {
   final String notes;
   final String status;
 
-  Appointment({
+  Appointments({
     required this.id,
     required this.dateRecorded,
     required this.dateSchedule,
@@ -31,7 +31,7 @@ class Appointment {
     required this.status,
   });
 
-  factory Appointment.fromJson(Map<String, dynamic> json) => Appointment(
+  factory Appointments.fromJson(Map<String, dynamic> json) => Appointments(
         id: json["id"],
         dateRecorded: json["dateRecorded"],
         dateSchedule: json["dateSchedule"],
@@ -57,12 +57,12 @@ class Appointment {
         "status": status,
       };
 
-  factory Appointment.fromFirestore(
+  factory Appointments.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
     SnapshotOptions? options,
   ) {
     final data = snapshot.data();
-    return Appointment(
+    return Appointments(
       id: data?["id"],
       dateRecorded: data?["dateRecorded"],
       dateSchedule: data?["dateSchedule"],

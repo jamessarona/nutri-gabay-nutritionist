@@ -72,41 +72,38 @@ class _PatientListPageState extends State<PatientListPage> {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    Expanded(
-                      child: Container(
-                        margin: EdgeInsets.symmetric(
-                            horizontal: screenSize.width * 0.01),
-                        constraints: const BoxConstraints(minHeight: 750),
-                        child: Card(
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                              left: screenSize.width * 0.005,
-                              right: screenSize.width * 0.005,
-                              top: screenSize.width * 0.005,
-                            ),
-                            child: const Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    CustomPatientTile(
-                                        name: 'James Angelo Sarona', image: ''),
-                                    CustomPatientTile(
-                                        name: 'James Angelo Sarona', image: ''),
-                                    CustomPatientTile(
-                                        name: 'James Angelo Sarona', image: ''),
-                                    CustomPatientTile(
-                                        name: 'James Angelo Sarona', image: ''),
-                                    CustomPatientTile(
-                                        name: 'James Angelo Sarona', image: ''),
-                                  ],
-                                ),
-                              ],
-                            ),
+                    Container(
+                      margin: EdgeInsets.symmetric(
+                          horizontal: screenSize.width * 0.01),
+                      height: 750,
+                      width: double.infinity,
+                      child: Card(
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            left: screenSize.width * 0.005,
+                            right: screenSize.width * 0.005,
+                            top: screenSize.width * 0.005,
                           ),
+                          child: GridView.count(
+                            // Create a grid with 2 columns. If you change the scrollDirection to
+                            // horizontal, this produces 2 rows.
+                            crossAxisCount: 2,
+                            // Generate 100 widgets that display their index in the List.
+                            children: List.generate(100, (index) {
+                              return CustomPatientTile(
+                                  name: 'James Angelo Sarona', image: '');
+                            }),
+                          ),
+                          // child: GridView.count(
+                          //   crossAxisCount: 2,
+                          //   children: List.generate(
+                          //     2,
+                          //     (index) {
+                          //       return CustomPatientTile(
+                          //           name: 'James Angelo Sarona', image: '');
+                          //     },
+                          //   ),
+                          // ),
                         ),
                       ),
                     ),
