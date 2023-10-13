@@ -83,6 +83,40 @@ class _AppointmentPageState extends State<AppointmentPage> {
     return result;
   }
 
+  String getPatientNutritionInfoByField(String patientId, String field) {
+    String result = '';
+    if (patientNutritions != null) {
+      for (var patientNutrition in patientNutritions!) {
+        if (patientId == patientNutrition.data().uid) {
+          if (field == 'age') {
+            result = patientNutrition.data().age.toStringAsFixed(0);
+          } else if (field == 'birthdate') {
+            result = patientNutrition.data().birthdate;
+          } else if (field == 'bmi') {
+            result = patientNutrition.data().bmi.toStringAsFixed(2);
+          } else if (field == 'category') {
+            result = patientNutrition.data().category.toString();
+          } else if (field == 'date') {
+            result = patientNutrition.data().date;
+          } else if (field == 'height') {
+            result = patientNutrition.data().height.toStringAsFixed(2);
+          } else if (field == 'points') {
+            result = patientNutrition.data().points.toStringAsFixed(0);
+          } else if (field == 'result') {
+            result = patientNutrition.data().result;
+          } else if (field == 'sex') {
+            result = patientNutrition.data().sex;
+          } else if (field == 'status') {
+            result = patientNutrition.data().status;
+          } else if (field == 'weight') {
+            result = patientNutrition.data().weight.toStringAsFixed(2);
+          }
+        }
+      }
+    }
+    return result;
+  }
+
   String getScheduleRange(int hourStart, int hourEnd) {
     String result = '';
 
@@ -94,6 +128,62 @@ class _AppointmentPageState extends State<AppointmentPage> {
       result = '$hourStart AM - $hourEnd PM';
     }
     return result;
+  }
+
+  showAlertDialog(BuildContext context, String appointmentId, bool isAccept) {
+    Widget cancelButton = TextButton(
+      child: Text(
+        "Cancel",
+        style: appstyle(14, Colors.black, FontWeight.normal),
+      ),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text(
+        !isAccept ? "Reject" : "Accept",
+        style: appstyle(
+            14, !isAccept ? Colors.red : Colors.green, FontWeight.bold),
+      ),
+      onPressed: () async {
+        await updateAppointmentRequest(
+                appointmentId, !isAccept ? 'Rejected' : 'Accepted')
+            .whenComplete(() {
+          Navigator.of(context).pop();
+          setState(() {});
+        });
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text(
+        "Confirmation",
+        style: appstyle(15, Colors.black, FontWeight.bold),
+      ),
+      content: Text(
+        "Are you sure you want to ${!isAccept ? "reject" : "accept"} this request?",
+        style: appstyle(13, Colors.black, FontWeight.normal),
+      ),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  Future<void> updateAppointmentRequest(
+      String appointmentId, String status) async {
+    final docUser =
+        FirebaseFirestore.instance.collection('appointment').doc(appointmentId);
+    await docUser.update({"status": status});
   }
 
   Widget buildAppointmentRequest() {
@@ -135,128 +225,177 @@ class _AppointmentPageState extends State<AppointmentPage> {
                             document.data()! as Map<String, dynamic>;
 
                         return Container(
-                            padding: const EdgeInsets.only(
-                                top: 5, left: 5, right: 5),
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: Colors.black,
-                                  width: 0.4,
-                                ),
+                          margin:
+                              const EdgeInsets.only(top: 5, left: 5, right: 5),
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: Colors.black,
+                                width: 0.4,
                               ),
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      height: 60,
-                                      width: 60,
-                                      padding: const EdgeInsets.all(3),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(50),
-                                        child: Container(
-                                          color: Colors.grey.shade300,
-                                          child: Image.network(
-                                            getPatientInfoByField(
-                                                data['patientId'], 'image'),
-                                            fit: BoxFit.fitHeight,
-                                            errorBuilder:
-                                                (context, error, stackTrace) {
-                                              return Container(
-                                                  color: Colors.grey.shade200);
-                                            },
-                                          ),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    height: 60,
+                                    width: 60,
+                                    padding: const EdgeInsets.all(3),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(50),
+                                      child: Container(
+                                        color: Colors.grey.shade300,
+                                        child: Image.network(
+                                          getPatientInfoByField(
+                                              data['patientId'], 'image'),
+                                          fit: BoxFit.fitHeight,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                            return Container(
+                                                color: Colors.grey.shade200);
+                                          },
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const SizedBox(height: 10),
-                                          RichText(
-                                            maxLines: 2,
-                                            text: TextSpan(
-                                              text: getPatientInfoByField(
-                                                  data['patientId'], 'name'),
-                                              style: appstyle(15, Colors.black,
-                                                  FontWeight.bold),
-                                              children: <TextSpan>[
-                                                TextSpan(
-                                                  text:
-                                                      ' request you appointment in ${data['dateSchedule']}',
-                                                  style: appstyle(
-                                                      14,
-                                                      Colors.black,
-                                                      FontWeight.normal),
-                                                ),
-                                                TextSpan(
-                                                  text:
-                                                      ' at ${getScheduleRange(data['hourStart'], data['hourEnd'])}',
-                                                  style: appstyle(
-                                                      14,
-                                                      Colors.black,
-                                                      FontWeight.normal),
-                                                ),
-                                              ],
-                                            ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const SizedBox(height: 10),
+                                        RichText(
+                                          maxLines: 2,
+                                          text: TextSpan(
+                                            text: getPatientInfoByField(
+                                                data['patientId'], 'name'),
+                                            style: appstyle(15, Colors.black,
+                                                FontWeight.bold),
+                                            children: <TextSpan>[
+                                              TextSpan(
+                                                text:
+                                                    ' request you appointment in ${data['dateSchedule']}',
+                                                style: appstyle(
+                                                    14,
+                                                    Colors.black,
+                                                    FontWeight.normal),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    ' at ${getScheduleRange(data['hourStart'], data['hourEnd'])}',
+                                                style: appstyle(
+                                                    14,
+                                                    Colors.black,
+                                                    FontWeight.normal),
+                                              ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                //TODO
-                                const Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(
-                                      width: 70,
+                                        ),
+                                      ],
                                     ),
-                                    // RichText(
-                                    //           maxLines: 1,
-                                    //           text: TextSpan(
-                                    //             text: getPatientNutritionInfoByField(
-                                    //                 data['patientId'], 'name'),
-                                    //             style: appstyle(15, Colors.black,
-                                    //                 FontWeight.bold),
-                                    //             children: <TextSpan>[
-                                    //               TextSpan(
-                                    //                 text:
-                                    //                     ' request you appointment in ${data['dateSchedule']}',
-                                    //                 style: appstyle(
-                                    //                     14,
-                                    //                     Colors.black,
-                                    //                     FontWeight.normal),
-                                    //               ),
-                                    //               TextSpan(
-                                    //                 text:
-                                    //                     ' at ${getScheduleRange(data['hourStart'], data['hourEnd'])}',
-                                    //                 style: appstyle(
-                                    //                     14,
-                                    //                     Colors.black,
-                                    //                     FontWeight.normal),
-                                    //               ),
-                                    //             ],
-                                    //           ),
-                                    //         ),
-                                  ],
-                                )
-                              ],
-                            ));
+                                  )
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(width: 70),
+                                  RichText(
+                                    maxLines: 1,
+                                    text: TextSpan(
+                                      text: 'BMI: ',
+                                      style: appstyle(
+                                          13, customColor, FontWeight.bold),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                          text:
+                                              '${getPatientNutritionInfoByField(data['patientId'], 'bmi')} - ',
+                                          style: appstyle(13, Colors.black,
+                                              FontWeight.bold),
+                                        ),
+                                        TextSpan(
+                                          text: getPatientNutritionInfoByField(
+                                              data['patientId'], 'status'),
+                                          style: appstyle(
+                                              13, customColor, FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 70),
+                                  RichText(
+                                    maxLines: 1,
+                                    text: TextSpan(
+                                      text: 'Risk Level: ',
+                                      style: appstyle(
+                                          13, customColor, FontWeight.bold),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                          text:
+                                              '${getPatientNutritionInfoByField(data['patientId'], 'points')} - ',
+                                          style: appstyle(13, Colors.black,
+                                              FontWeight.bold),
+                                        ),
+                                        TextSpan(
+                                          text: getPatientNutritionInfoByField(
+                                              data['patientId'], 'result'),
+                                          style: appstyle(
+                                              13, customColor, FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            showAlertDialog(
+                                                context, data['id'], false);
+                                          },
+                                          child: Text(
+                                            'Reject',
+                                            style: appstyle(14, Colors.black,
+                                                FontWeight.normal),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        GestureDetector(
+                                          onTap: () {
+                                            showAlertDialog(
+                                                context, data['id'], true);
+                                          },
+                                          child: Text(
+                                            'Accept',
+                                            style: appstyle(14, customColor,
+                                                FontWeight.normal),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                          ),
+                        );
                       })
                       .toList()
                       .cast(),
