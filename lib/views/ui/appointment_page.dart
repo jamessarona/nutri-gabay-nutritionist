@@ -1,7 +1,6 @@
-import 'dart:html';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:nutri_gabay_nutritionist/models/appointment.dart';
 import 'package:nutri_gabay_nutritionist/models/doctor.dart';
 import 'package:nutri_gabay_nutritionist/models/patient.dart';
@@ -19,10 +18,12 @@ class AppointmentPage extends StatefulWidget {
 
 class _AppointmentPageState extends State<AppointmentPage> {
   late Size screenSize;
+  final CalendarController _calendarController = CalendarController();
   String uid = '';
   List<QueryDocumentSnapshot<Patient>>? patients;
   List<QueryDocumentSnapshot<PatientNutrition>>? patientNutritions;
   List<QueryDocumentSnapshot<Doctor>>? doctors;
+  List<QueryDocumentSnapshot<Appointments>>? appointments;
 
   Future<void> getNutritionistId() async {
     uid = await FireBaseAuth().currentUser();
@@ -60,6 +61,28 @@ class _AppointmentPageState extends State<AppointmentPage> {
         }
       },
     );
+  }
+
+  Future<void> getPendingAppointments() async {
+    if (uid != '') {
+      final docRef = FirebaseFirestore.instance
+          .collection("appointment")
+          .where(
+            Filter.and(Filter("status", isEqualTo: "Pending"),
+                Filter("doctorId", isEqualTo: uid)),
+          )
+          .withConverter(
+            fromFirestore: Appointments.fromFirestore,
+            toFirestore: (Appointments ptn, _) => ptn.toFirestore(),
+          );
+      await docRef.get().then(
+        (querySnapshot) {
+          if (querySnapshot.docs.isNotEmpty) {
+            appointments = querySnapshot.docs;
+          }
+        },
+      );
+    }
   }
 
   String getPatientInfoByField(String patientId, String field) {
@@ -421,26 +444,48 @@ class _AppointmentPageState extends State<AppointmentPage> {
         borderRadius: BorderRadius.circular(10),
         color: Colors.white,
       ),
-      child: SfCalendar(
-        view: CalendarView.month,
-        dataSource: AppointmentSchedules(getAppointments()),
-        initialSelectedDate: DateTime.now(),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 800,
+            child: SfCalendar(
+              controller: _calendarController,
+              headerStyle:
+                  const CalendarHeaderStyle(textAlign: TextAlign.center),
+              view: CalendarView.month,
+              dataSource: AppointmentSchedules(getAppointments()),
+              monthViewSettings: const MonthViewSettings(
+                appointmentDisplayMode: MonthAppointmentDisplayMode.indicator,
+                showAgenda: true,
+                appointmentDisplayCount: 5,
+              ),
+              initialSelectedDate: DateTime.now(),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   List<Appointment> getAppointments() {
+    getPendingAppointments();
     List<Appointment> meetings = <Appointment>[];
-    final DateTime today = DateTime.now();
-    final DateTime startTime =
-        DateTime(today.year, today.month, today.day, 9, 0, 0);
-    final DateTime endTime =
-        DateTime(today.year, today.month, today.day, 13, 0, 0);
-    meetings.add(Appointment(
-        startTime: startTime,
-        endTime: endTime,
-        subject: 'Abc',
-        color: customColor));
+
+    if (appointments != null) {
+      for (var appointment in appointments!) {
+        final DateTime bookingStart = DateFormat("MM/dd/yyyy hh").parse(
+            "${appointment.data().dateSchedule} ${appointment.data().hourStart.toStringAsFixed(2)}");
+        final DateTime bookingEnd = DateFormat("MM/dd/yyyy hh").parse(
+            "${appointment.data().dateSchedule} ${appointment.data().hourEnd.toStringAsFixed(2)}");
+        meetings.add(
+          Appointment(
+              startTime: bookingStart,
+              endTime: bookingEnd,
+              subject: appointment.data().notes,
+              color: customColor),
+        );
+      }
+    }
     return meetings;
   }
 
@@ -449,6 +494,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
     getNutritionistId();
     getPatients();
     getPatientNutritions();
+    getPendingAppointments();
     super.initState();
   }
 
