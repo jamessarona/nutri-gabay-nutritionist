@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:nutri_gabay_nutritionist/models/patient.dart';
+import 'package:nutri_gabay_nutritionist/services/baseauth.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_patient_tile.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_text_fields.dart';
@@ -12,8 +16,65 @@ class PatientListPage extends StatefulWidget {
 
 class _PatientListPageState extends State<PatientListPage> {
   late Size screenSize;
+  String uid = '';
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _search = TextEditingController();
+
+  List<QueryDocumentSnapshot<Patient>>? patients;
+
+  Future<void> getNutritionistId() async {
+    uid = await FireBaseAuth().currentUser();
+    setState(() {});
+  }
+
+  Future<void> getPatients() async {
+    final docRef =
+        FirebaseFirestore.instance.collection("patient").withConverter(
+              fromFirestore: Patient.fromFirestore,
+              toFirestore: (Patient pt, _) => pt.toFirestore(),
+            );
+    await docRef.get().then(
+      (querySnapshot) {
+        if (querySnapshot.docs.isNotEmpty) {
+          patients = querySnapshot.docs;
+          setState(() {});
+        }
+      },
+    );
+  }
+
+  String getPatientInfoByField(String patientId, String field) {
+    String result = '';
+    if (patients != null) {
+      for (var patient in patients!) {
+        if (patientId == patient.data().uid) {
+          if (field == 'name') {
+            result = "${patient.data().firstname} ${patient.data().lastname}";
+          } else if (field == 'firstname') {
+            result = patient.data().firstname;
+          } else if (field == 'lastname') {
+            result = patient.data().lastname;
+          } else if (field == 'email') {
+            result = patient.data().email;
+          } else if (field == 'image') {
+            result = patient.data().image;
+          } else if (field == 'phone') {
+            result = patient.data().phone;
+          }
+          break;
+        }
+      }
+    }
+    return result;
+  }
+
+  @override
+  void initState() {
+    getNutritionistId();
+    getPatients();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     screenSize = MediaQuery.of(context).size;
@@ -78,33 +139,73 @@ class _PatientListPageState extends State<PatientListPage> {
                       height: 750,
                       width: double.infinity,
                       child: Card(
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            left: screenSize.width * 0.005,
-                            right: screenSize.width * 0.005,
-                            top: screenSize.width * 0.005,
-                          ),
-                          child: GridView.count(
-                            // Create a grid with 2 columns. If you change the scrollDirection to
-                            // horizontal, this produces 2 rows.
-                            crossAxisCount: 2,
-                            // Generate 100 widgets that display their index in the List.
-                            children: List.generate(100, (index) {
-                              return CustomPatientTile(
-                                  name: 'James Angelo Sarona', image: '');
-                            }),
-                          ),
-                          // child: GridView.count(
-                          //   crossAxisCount: 2,
-                          //   children: List.generate(
-                          //     2,
-                          //     (index) {
-                          //       return CustomPatientTile(
-                          //           name: 'James Angelo Sarona', image: '');
-                          //     },
-                          //   ),
-                          // ),
-                        ),
+                        child: uid != ''
+                            ? StreamBuilder<QuerySnapshot>(
+                                stream: FirebaseFirestore.instance
+                                    .collection('appointment')
+                                    .where(
+                                      Filter.and(
+                                          Filter("status",
+                                              isEqualTo: "Accepted"),
+                                          Filter("doctorId", isEqualTo: uid)),
+                                    )
+                                    .snapshots(),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                                  if (snapshot.hasError) {
+                                    return const Text('Something went wrong');
+                                  }
+
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                  if (!snapshot.hasData) {
+                                    return const Text('No Records');
+                                  }
+                                  return ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    shrinkWrap: true,
+                                    children: [
+                                      StaggeredGrid.count(
+                                        axisDirection: AxisDirection.right,
+                                        crossAxisCount: 8,
+                                        mainAxisSpacing: 0,
+                                        crossAxisSpacing: 0,
+                                        children: snapshot.data!.docs
+                                            .map((DocumentSnapshot document) {
+                                              Map<String, dynamic> data =
+                                                  document.data()!
+                                                      as Map<String, dynamic>;
+
+                                              return StaggeredGridTile.count(
+                                                crossAxisCellCount: 1,
+                                                mainAxisCellCount: 4,
+                                                child: CustomPatientTile(
+                                                  patientId: data['patientId'],
+                                                  patientNutritionalId: data[
+                                                      'patientNutritionalId'],
+                                                  name: getPatientInfoByField(
+                                                      data['patientId'],
+                                                      'name'),
+                                                  image: getPatientInfoByField(
+                                                      data['patientId'],
+                                                      'image'),
+                                                ),
+                                              );
+                                            })
+                                            .toList()
+                                            .cast(),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              )
+                            : const Center(
+                                child: CircularProgressIndicator(),
+                              ),
                       ),
                     ),
                   ],
