@@ -410,43 +410,46 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                           const SizedBox(height: 10),
-                          Container(
-                            margin: EdgeInsets.symmetric(
-                                horizontal: screenSize.width * 0.01),
-                            height: 500,
-                            width: double.infinity,
-                            child: Card(
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                  left: screenSize.width * 0.005,
-                                  right: screenSize.width * 0.005,
-                                  top: screenSize.width * 0.005,
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    ProfileTextField(
-                                      controller: _aboutMe,
-                                      label: 'About Me',
-                                      isObscure: false,
-                                      keyboardType: TextInputType.text,
-                                      maxLines: 11,
-                                      isEditable: isEditable,
+                          tabIndex == 0
+                              ? Container(
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: screenSize.width * 0.01),
+                                  height: 500,
+                                  width: double.infinity,
+                                  child: Card(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                        left: screenSize.width * 0.005,
+                                        right: screenSize.width * 0.005,
+                                        top: screenSize.width * 0.005,
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          ProfileTextField(
+                                            controller: _aboutMe,
+                                            label: 'About Me',
+                                            isObscure: false,
+                                            keyboardType: TextInputType.text,
+                                            maxLines: 11,
+                                            isEditable: isEditable,
+                                          ),
+                                          const SizedBox(height: 20),
+                                          ProfileTextField(
+                                            controller: _specialties,
+                                            label: 'Specialties',
+                                            isObscure: false,
+                                            keyboardType: TextInputType.text,
+                                            maxLines: 11,
+                                            isEditable: isEditable,
+                                          )
+                                        ],
+                                      ),
                                     ),
-                                    const SizedBox(height: 20),
-                                    ProfileTextField(
-                                      controller: _specialties,
-                                      label: 'Specialties',
-                                      isObscure: false,
-                                      keyboardType: TextInputType.text,
-                                      maxLines: 11,
-                                      isEditable: isEditable,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
+                                  ),
+                                )
+                              : Container(),
                         ],
                       ),
                     ),

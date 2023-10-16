@@ -29,3 +29,36 @@ class UserCredentialPrimaryButton extends StatelessWidget {
     );
   }
 }
+
+class CustomButton extends StatelessWidget {
+  final void Function() onPress;
+  final String label;
+  final double labelSize;
+  final double radius;
+  const CustomButton({
+    super.key,
+    required this.onPress,
+    required this.label,
+    required this.labelSize,
+    required this.radius,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPress,
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radius),
+        ),
+        backgroundColor: customColor,
+        foregroundColor: Colors.white,
+      ),
+      child: Text(
+        label,
+        style: appstyle(labelSize, Colors.white, FontWeight.normal),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+}
