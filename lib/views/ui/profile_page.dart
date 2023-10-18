@@ -5,11 +5,15 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:nutri_gabay_nutritionist/models/appointment.dart';
 import 'package:nutri_gabay_nutritionist/models/doctor.dart';
 import 'package:nutri_gabay_nutritionist/services/baseauth.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_buttons.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_text_fields.dart';
+import 'package:nutri_gabay_nutritionist/views/ui/appointment_page.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -25,6 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController _specialization = TextEditingController();
   final TextEditingController _aboutMe = TextEditingController();
   final TextEditingController _specialties = TextEditingController();
+  final CalendarController _calendarController = CalendarController();
 
   bool isEditable = false;
   int tabIndex = 0;
@@ -32,6 +37,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   File? image;
   Uint8List webImage = Uint8List(8);
+
+  List<QueryDocumentSnapshot<Appointments>>? appointments;
 
   void getDoctorInfo() async {
     String uid = await FireBaseAuth().currentUser();
@@ -47,6 +54,7 @@ class _ProfilePageState extends State<ProfilePage> {
     _aboutMe.text = doctor!.about;
     _specialties.text = doctor!.specialties;
     isEditable = false;
+    getApprovedAppointments();
     setState(() {});
   }
 
@@ -117,6 +125,50 @@ class _ProfilePageState extends State<ProfilePage> {
         this.image = pickedImage;
         setState(() {});
       }
+    }
+  }
+
+  List<Appointment> getAppointments() {
+    getApprovedAppointments();
+    List<Appointment> meetings = <Appointment>[];
+
+    if (appointments != null) {
+      for (var appointment in appointments!) {
+        final DateTime bookingStart = DateFormat("MM/dd/yyyy hh").parse(
+            "${appointment.data().dateSchedule} ${appointment.data().hourStart.toStringAsFixed(2)}");
+        final DateTime bookingEnd = DateFormat("MM/dd/yyyy hh").parse(
+            "${appointment.data().dateSchedule} ${appointment.data().hourEnd.toStringAsFixed(2)}");
+        meetings.add(
+          Appointment(
+              startTime: bookingStart,
+              endTime: bookingEnd,
+              subject: appointment.data().notes,
+              color: customColor),
+        );
+      }
+    }
+    return meetings;
+  }
+
+  Future<void> getApprovedAppointments() async {
+    if (doctor != null) {
+      final docRef = FirebaseFirestore.instance
+          .collection("appointment")
+          .where(
+            Filter.and(Filter("status", isNotEqualTo: "Pending"),
+                Filter("doctorId", isEqualTo: doctor!.uid)),
+          )
+          .withConverter(
+            fromFirestore: Appointments.fromFirestore,
+            toFirestore: (Appointments ptn, _) => ptn.toFirestore(),
+          );
+      await docRef.get().then(
+        (querySnapshot) {
+          if (querySnapshot.docs.isNotEmpty) {
+            appointments = querySnapshot.docs;
+          }
+        },
+      );
     }
   }
 
@@ -449,7 +501,33 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ),
                                   ),
                                 )
-                              : Container(),
+                              : Container(
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: screenSize.width * 0.01),
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: screenSize.height * 0.01),
+                                  width: double.infinity,
+                                  height: 500,
+                                  child: Card(
+                                    child: SfCalendar(
+                                      controller: _calendarController,
+                                      headerStyle: const CalendarHeaderStyle(
+                                          textAlign: TextAlign.center),
+                                      view: CalendarView.month,
+                                      dataSource: AppointmentSchedules(
+                                          getAppointments()),
+                                      monthViewSettings:
+                                          const MonthViewSettings(
+                                        appointmentDisplayMode:
+                                            MonthAppointmentDisplayMode
+                                                .indicator,
+                                        showAgenda: true,
+                                        appointmentDisplayCount: 5,
+                                      ),
+                                      initialSelectedDate: DateTime.now(),
+                                    ),
+                                  ),
+                                ),
                         ],
                       ),
                     ),
