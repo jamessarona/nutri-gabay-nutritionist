@@ -5,6 +5,7 @@ import 'package:nutri_gabay_nutritionist/models/patient_nutrition.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_buttons.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_container.dart';
+import 'package:nutri_gabay_nutritionist/views/ui/nutrition_intervention_page.dart';
 
 class PatientDetailPage extends StatefulWidget {
   final String patientId;
@@ -147,7 +148,15 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
             title: 'Nutrition\nIntervention',
             icon: '',
             iconData: Icons.phone,
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => NutritionInterventionPage(
+                    patientNutritionalId: widget.patientNutritionalId,
+                  ),
+                ),
+              );
+            },
           ),
           const SizedBox(width: 10),
           PatientActionsContainer(
