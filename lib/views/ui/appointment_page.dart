@@ -285,7 +285,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                         child: Image.network(
                                           getPatientInfoByField(
                                               data['patientId'], 'image'),
-                                          fit: BoxFit.fitHeight,
+                                          fit: BoxFit.fill,
                                           errorBuilder:
                                               (context, error, stackTrace) {
                                             return Container(

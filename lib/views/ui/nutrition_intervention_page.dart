@@ -16,15 +16,20 @@ class NutritionInterventionPage extends StatefulWidget {
 
 class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
   late Size screenSize;
-  late DropzoneViewController controller;
+  DropzoneViewController? controller;
+
+  String? fileName;
+  String? fileMime;
+  int? fileBytes;
+  String? fileUrl;
 
   bool isHighlighted = false;
 
   Future acceptFile(dynamic event) async {
-    final name = event.name;
-    final mime = await controller.getFileMIME(event);
-    final bytes = await controller.getFileSize(event);
-    final url = await controller.createFileUrl(event);
+    fileName = event.name;
+    fileMime = await controller!.getFileMIME(event);
+    fileBytes = await controller!.getFileSize(event);
+    fileUrl = await controller!.createFileUrl(event);
 
     setState(() {
       isHighlighted = false;
@@ -45,7 +50,7 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
       child: DottedBorder(
         borderType: BorderType.RRect,
         color: Colors.black38,
-        strokeWidth: 3,
+        strokeWidth: 1,
         padding: EdgeInsets.zero,
         dashPattern: const [8, 4],
         radius: const Radius.circular(10),
@@ -81,7 +86,7 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
                     ),
                     GestureDetector(
                       onTap: () async {
-                        final events = await controller.pickFiles();
+                        final events = await controller!.pickFiles();
                         if (events.isEmpty) return;
 
                         acceptFile(events.first);
@@ -92,7 +97,15 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
                       ),
                     )
                   ],
-                )
+                ),
+                const SizedBox(height: 10),
+                fileName != null
+                    ? Text(
+                        fileName!,
+                        style: appstyle(15, Colors.black, FontWeight.normal),
+                        textAlign: TextAlign.center,
+                      )
+                    : Container()
               ],
             ),
           ],
@@ -105,6 +118,10 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
     return SizedBox(
       width: screenSize.width > 500 ? screenSize.width * .45 : double.infinity,
     );
+  }
+
+  Future<void> uploadFile() async {
+    // TODO: Upload selected pdf/image
   }
 
   @override
@@ -162,7 +179,15 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
                         SizedBox(
                           width: 100,
                           child: CustomButton(
-                            onPress: () {},
+                            onPress: () {
+                              uploadFile().whenComplete(() {
+                                fileName = null;
+                                fileMime = null;
+                                fileBytes = null;
+                                fileUrl = null;
+                                setState(() {});
+                              });
+                            },
                             label: 'Upload',
                             labelSize: 15,
                             radius: 5,
