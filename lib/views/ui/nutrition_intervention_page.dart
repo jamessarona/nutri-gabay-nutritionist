@@ -16,7 +16,7 @@ class NutritionInterventionPage extends StatefulWidget {
 
 class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
   late Size screenSize;
-  DropzoneViewController? controller;
+  late DropzoneViewController controller;
 
   String? fileName;
   String? fileMime;
@@ -27,9 +27,9 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
 
   Future acceptFile(dynamic event) async {
     fileName = event.name;
-    fileMime = await controller!.getFileMIME(event);
-    fileBytes = await controller!.getFileSize(event);
-    fileUrl = await controller!.createFileUrl(event);
+    fileMime = await controller.getFileMIME(event);
+    fileBytes = await controller.getFileSize(event);
+    fileUrl = await controller.createFileUrl(event);
 
     setState(() {
       isHighlighted = false;
@@ -86,7 +86,7 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
                     ),
                     GestureDetector(
                       onTap: () async {
-                        final events = await controller!.pickFiles();
+                        final events = await controller.pickFiles();
                         if (events.isEmpty) return;
 
                         acceptFile(events.first);
