@@ -1,13 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dropzone/flutter_dropzone.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_buttons.dart';
+import 'package:flutter/foundation.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class NutritionInterventionPage extends StatefulWidget {
+  final String appointmentId;
   final String patientNutritionalId;
   const NutritionInterventionPage(
-      {super.key, required this.patientNutritionalId});
+      {super.key,
+      required this.appointmentId,
+      required this.patientNutritionalId});
 
   @override
   State<NutritionInterventionPage> createState() =>
@@ -22,15 +31,32 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
   String? fileMime;
   int? fileBytes;
   String? fileUrl;
+  Uint8List webImage = Uint8List(8);
 
   bool isHighlighted = false;
 
   Future acceptFile(dynamic event) async {
-    fileName = event.name;
-    fileMime = await controller.getFileMIME(event);
-    fileBytes = await controller.getFileSize(event);
-    fileUrl = await controller.createFileUrl(event);
-
+    if (['application/pdf', 'image/png']
+        .contains(await controller.getFileMIME(event))) {
+      fileName = event.name;
+      fileMime = await controller.getFileMIME(event);
+      fileBytes = await controller.getFileSize(event);
+      fileUrl = await controller.createFileUrl(event);
+      webImage = await controller.getFileData(event);
+    } else {
+      final snackBar = SnackBar(
+        content: Text(
+          'This is not a valid file type',
+          style: appstyle(12, Colors.white, FontWeight.normal),
+        ),
+        action: SnackBarAction(
+          label: 'Close',
+          onPressed: () {},
+        ),
+      );
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
     setState(() {
       isHighlighted = false;
     });
@@ -54,62 +80,65 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
         padding: EdgeInsets.zero,
         dashPattern: const [8, 4],
         radius: const Radius.circular(10),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            DropzoneView(
-              onCreated: (controller) => this.controller = controller,
-              onHover: () => setState(() => isHighlighted = true),
-              onLeave: () => setState(() => isHighlighted = false),
-              onDrop: acceptFile,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.cloud_upload_outlined,
-                  size: 120,
-                  color: Colors.black,
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  'Drop your file here',
-                  style: appstyle(20, Colors.black, FontWeight.bold),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'or ',
-                      style: appstyle(20, Colors.black, FontWeight.bold),
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        final events = await controller.pickFiles();
-                        if (events.isEmpty) return;
-
-                        acceptFile(events.first);
-                      },
-                      child: Text(
-                        'Browse',
-                        style: appstyle(20, customColor, FontWeight.bold),
+        child: kIsWeb
+            ? Stack(
+                alignment: Alignment.center,
+                children: [
+                  DropzoneView(
+                    onCreated: (controller) => this.controller = controller,
+                    onHover: () => setState(() => isHighlighted = true),
+                    onLeave: () => setState(() => isHighlighted = false),
+                    onDrop: acceptFile,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.cloud_upload_outlined,
+                        size: 120,
+                        color: Colors.black,
                       ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 10),
-                fileName != null
-                    ? Text(
-                        fileName!,
-                        style: appstyle(15, Colors.black, FontWeight.normal),
-                        textAlign: TextAlign.center,
-                      )
-                    : Container()
-              ],
-            ),
-          ],
-        ),
+                      const SizedBox(height: 5),
+                      Text(
+                        'Drop your file here',
+                        style: appstyle(20, Colors.black, FontWeight.bold),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'or ',
+                            style: appstyle(20, Colors.black, FontWeight.bold),
+                          ),
+                          GestureDetector(
+                            onTap: () async {
+                              final events = await controller.pickFiles();
+                              if (events.isEmpty) return;
+
+                              acceptFile(events.first);
+                            },
+                            child: Text(
+                              'Browse',
+                              style: appstyle(20, customColor, FontWeight.bold),
+                            ),
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      fileName != null
+                          ? Text(
+                              fileName!,
+                              style:
+                                  appstyle(15, Colors.black, FontWeight.normal),
+                              textAlign: TextAlign.center,
+                            )
+                          : Container()
+                    ],
+                  ),
+                ],
+              )
+            : Container(),
       ),
     );
   }
@@ -117,11 +146,241 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
   Widget buildFiles() {
     return SizedBox(
       width: screenSize.width > 500 ? screenSize.width * .45 : double.infinity,
+      height: screenSize.width > screenSize.height * 0.7
+          ? screenSize.height * 0.7
+          : screenSize.width,
+      child: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('appointment')
+            .doc(widget.appointmentId)
+            .collection('files')
+            .orderBy('date', descending: true)
+            .snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return const Text('Something went wrong');
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (!snapshot.hasData) {
+            return const Text('No Records');
+          }
+          return ListView(
+            children: snapshot.data!.docs
+                .map(
+                  (DocumentSnapshot document) {
+                    Map<String, dynamic> data =
+                        document.data()! as Map<String, dynamic>;
+
+                    return GestureDetector(
+                      onTap: () {
+                        launchUrlString(data['url']);
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 10),
+                        height: 90,
+                        child: Card(
+                          elevation: 10,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(width: 10),
+                              Icon(
+                                data['type'] == 'application/pdf'
+                                    ? FontAwesomeIcons.filePdf
+                                    : FontAwesomeIcons.fileImage,
+                                color: data['type'] == 'application/pdf'
+                                    ? const Color.fromARGB(255, 201, 126, 121)
+                                    : const Color.fromARGB(255, 115, 163, 201),
+                                size: 50,
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      data['name'],
+                                      style: appstyle(
+                                        14,
+                                        Colors.black,
+                                        FontWeight.bold,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.visible,
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      formatDate(data['date']),
+                                      style: appstyle(
+                                        11,
+                                        Colors.black,
+                                        FontWeight.normal,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.visible,
+                                    ),
+                                    Text(
+                                      '${data['size'].toStringAsFixed(2)} KB',
+                                      style: appstyle(
+                                        11,
+                                        Colors.black,
+                                        FontWeight.normal,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.visible,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              IconButton(
+                                alignment: Alignment.topRight,
+                                onPressed: () async {
+                                  showAlertDialog(context, data['id']);
+                                },
+                                icon: const Icon(
+                                  FontAwesomeIcons.trashCan,
+                                  size: 20,
+                                  color: Colors.red,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                )
+                .toList()
+                .cast(),
+          );
+        },
+      ),
     );
   }
 
   Future<void> uploadFile() async {
-    // TODO: Upload selected pdf/image
+    if (fileName != null &&
+        fileMime != null &&
+        fileBytes != null &&
+        fileUrl != null) await saveToStorage();
+  }
+
+  Future<void> saveToStorage() async {
+    try {
+      var snapshot = await FirebaseStorage.instance
+          .ref(
+              'files/appointment/interventions/${widget.appointmentId}/${DateTime.now().millisecondsSinceEpoch}/$fileName')
+          .putData(
+            webImage,
+            SettableMetadata(contentType: fileMime),
+          );
+
+      var downloadUrl = await snapshot.ref.getDownloadURL();
+
+      saveToDatabase(downloadUrl);
+      // ignore: empty_catches
+    } on FirebaseException {}
+  }
+
+  Future<void> saveToDatabase(String downloadUrl) async {
+    DateTime now = DateTime.now();
+    try {
+      final parentCollection =
+          FirebaseFirestore.instance.collection('appointment');
+
+      final document =
+          parentCollection.doc(widget.appointmentId).collection('files').doc();
+
+      await document.set({
+        'id': document.id,
+        'name': fileName,
+        'size': (fileBytes! * 0.001),
+        'type': fileMime,
+        'date': now.toString(),
+        'url': downloadUrl,
+      });
+      setState(() {});
+      // ignore: empty_catches
+    } on FirebaseException {}
+  }
+
+  Future<void> deleteFile(String id) async {
+    try {
+      final parentCollection =
+          FirebaseFirestore.instance.collection('appointment');
+
+      final document = parentCollection
+          .doc(widget.appointmentId)
+          .collection('files')
+          .doc(id);
+
+      await document.delete();
+      setState(() {});
+      // ignore: empty_catches
+    } on FirebaseException {}
+  }
+
+  String formatDate(String date) {
+    String format = '';
+    DateTime day = DateFormat('yyyy-MM-dd hh:mm:ss').parse(date);
+
+    format =
+        '${day.month}/${day.day}/${day.year} ${day.hour < 13 ? day.hour : (day.hour - 12).toStringAsFixed(0)}:${day.minute} ${day.hour < 13 ? 'AM' : 'PM'}';
+    return format;
+  }
+
+  showAlertDialog(BuildContext context, String fileId) {
+    Widget cancelButton = TextButton(
+      child: Text(
+        "Cancel",
+        style: appstyle(14, Colors.black, FontWeight.normal),
+      ),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget deleteButton = TextButton(
+      child: Text(
+        "Delete",
+        style: appstyle(14, Colors.red, FontWeight.bold),
+      ),
+      onPressed: () async {
+        await deleteFile(fileId);
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pop();
+        setState(() {});
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text(
+        "Confirmation",
+        style: appstyle(15, Colors.black, FontWeight.bold),
+      ),
+      content: Text(
+        "Are you sure you want to delete this file?",
+        style: appstyle(13, Colors.black, FontWeight.normal),
+      ),
+      actions: [
+        cancelButton,
+        deleteButton,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   @override

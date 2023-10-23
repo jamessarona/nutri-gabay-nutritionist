@@ -8,10 +8,15 @@ import 'package:nutri_gabay_nutritionist/views/shared/custom_container.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/nutrition_intervention_page.dart';
 
 class PatientDetailPage extends StatefulWidget {
+  final String appointmentId;
   final String patientId;
   final String patientNutritionalId;
+
   const PatientDetailPage(
-      {super.key, required this.patientId, required this.patientNutritionalId});
+      {super.key,
+      required this.appointmentId,
+      required this.patientId,
+      required this.patientNutritionalId});
 
   @override
   State<PatientDetailPage> createState() => _PatientDetailPageState();
@@ -152,6 +157,7 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (ctx) => NutritionInterventionPage(
+                    appointmentId: widget.appointmentId,
                     patientNutritionalId: widget.patientNutritionalId,
                   ),
                 ),
