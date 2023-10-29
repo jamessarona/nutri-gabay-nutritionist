@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_buttons.dart';
@@ -30,7 +31,6 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
   String? fileName;
   String? fileMime;
   int? fileBytes;
-  String? fileUrl;
   Uint8List webImage = Uint8List(8);
 
   bool isHighlighted = false;
@@ -41,7 +41,6 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
       fileName = event.name;
       fileMime = await controller.getFileMIME(event);
       fileBytes = await controller.getFileSize(event);
-      fileUrl = await controller.createFileUrl(event);
       webImage = await controller.getFileData(event);
     } else {
       final snackBar = SnackBar(
@@ -267,30 +266,45 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
   }
 
   Future<void> uploadFile() async {
-    if (fileName != null &&
-        fileMime != null &&
-        fileBytes != null &&
-        fileUrl != null) await saveToStorage();
+    if (fileName != null && fileMime != null && fileBytes != null) {
+      await saveToDatabase();
+    } else {
+      await pickFile();
+    }
   }
 
-  Future<void> saveToStorage() async {
-    try {
-      var snapshot = await FirebaseStorage.instance
-          .ref(
-              'files/appointment/interventions/${widget.appointmentId}/${DateTime.now().millisecondsSinceEpoch}/$fileName')
-          .putData(
-            webImage,
-            SettableMetadata(contentType: fileMime),
+  Future pickFile() async {
+    if (kIsWeb) {
+      final ImagePicker picker = ImagePicker();
+      XFile? image = await picker.pickMedia();
+      if (image != null) {
+        if (['application/pdf', 'image/png'].contains(image.mimeType)) {
+          var f = await image.readAsBytes();
+          webImage = f;
+          fileName = image.name;
+          fileMime = image.mimeType;
+          fileBytes = f.lengthInBytes;
+          setState(() {});
+          uploadFile();
+        } else {
+          final snackBar = SnackBar(
+            content: Text(
+              'This is not a valid file type',
+              style: appstyle(12, Colors.white, FontWeight.normal),
+            ),
+            action: SnackBarAction(
+              label: 'Close',
+              onPressed: () {},
+            ),
           );
-
-      var downloadUrl = await snapshot.ref.getDownloadURL();
-
-      saveToDatabase(downloadUrl);
-      // ignore: empty_catches
-    } on FirebaseException {}
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      }
+    }
   }
 
-  Future<void> saveToDatabase(String downloadUrl) async {
+  Future<void> saveToDatabase() async {
     DateTime now = DateTime.now();
     try {
       final parentCollection =
@@ -305,8 +319,47 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
         'size': (fileBytes! * 0.001),
         'type': fileMime,
         'date': now.toString(),
+        'url': '',
+      }).whenComplete(() async {
+        await saveToStorage(document.id);
+      });
+      // ignore: empty_catches
+    } on FirebaseException {}
+  }
+
+  Future<void> saveToStorage(String fileId) async {
+    try {
+      var snapshot = await FirebaseStorage.instance
+          .ref(
+              'files/appointment/interventions/${widget.appointmentId}/$fileId/$fileName')
+          .putData(
+            webImage,
+            SettableMetadata(contentType: fileMime),
+          );
+
+      var downloadUrl = await snapshot.ref.getDownloadURL();
+
+      await saveUrlToDatabase(fileId, downloadUrl);
+      // ignore: empty_catches
+    } on FirebaseException {}
+  }
+
+  Future<void> saveUrlToDatabase(String fileId, String downloadUrl) async {
+    try {
+      final parentCollection =
+          FirebaseFirestore.instance.collection('appointment');
+
+      final document = parentCollection
+          .doc(widget.appointmentId)
+          .collection('files')
+          .doc(fileId);
+
+      await document.update({
         'url': downloadUrl,
       });
+      fileName = null;
+      fileMime = null;
+      fileBytes = null;
       setState(() {});
       // ignore: empty_catches
     } on FirebaseException {}
@@ -440,10 +493,6 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
                           child: CustomButton(
                             onPress: () {
                               uploadFile().whenComplete(() {
-                                fileName = null;
-                                fileMime = null;
-                                fileBytes = null;
-                                fileUrl = null;
                                 setState(() {});
                               });
                             },
