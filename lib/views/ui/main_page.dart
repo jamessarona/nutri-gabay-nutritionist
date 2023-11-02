@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:nutri_gabay_nutritionist/services/baseauth.dart';
@@ -7,6 +9,8 @@ import 'package:nutri_gabay_nutritionist/views/ui/appointment_page.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/profile_page.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/patient_list_page.dart';
 import 'package:universal_html/html.dart' as html;
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html' as web;
 
 class MainPage extends StatefulWidget {
   final BaseAuth auth;
@@ -17,18 +21,48 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   PageController pageController = PageController();
   SideMenuController sideMenu = SideMenuController();
 
   bool isHideNavBar = false;
-
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     sideMenu.addListener((index) {
       pageController.jumpToPage(index);
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
+    super.didChangeAppLifecycleState(state);
+    String uid = await widget.auth.currentUser();
+    switch (state) {
+      case AppLifecycleState.resumed:
+        updateUserStatus(uid, true);
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+      case AppLifecycleState.detached:
+        updateUserStatus(uid, false);
+        break;
+    }
+  }
+
+  Future<void> updateUserStatus(String userUID, bool isOnline) async {
+    await FirebaseFirestore.instance.collection('doctor').doc(userUID).update({
+      "isOnline": isOnline,
+      "lastActive": DateTime.now(),
+    });
   }
 
   @override
@@ -79,7 +113,9 @@ class _MainPageState extends State<MainPage> {
                 SideMenuItem(
                   title: 'Exit',
                   icon: const Icon(Icons.exit_to_app),
-                  onTap: (index, _) {
+                  onTap: (index, _) async {
+                    String uid = await widget.auth.currentUser();
+                    updateUserStatus(uid, false);
                     FireBaseAuth()
                         .signOut()
                         .then((value) async => html.window.location.reload());

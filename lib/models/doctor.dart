@@ -19,6 +19,8 @@ class Doctor {
   final String specialties;
   final String status;
   final String password;
+  final bool isOnline;
+  final DateTime lastActive;
 
   Doctor({
     required this.uid,
@@ -34,6 +36,8 @@ class Doctor {
     required this.specialties,
     required this.status,
     required this.password,
+    required this.isOnline,
+    required this.lastActive,
   });
 
   factory Doctor.fromJson(Map<String, dynamic> json) => Doctor(
@@ -50,6 +54,8 @@ class Doctor {
         specialties: json["specialties"],
         status: json["status"],
         password: json["password"],
+        isOnline: json["isOnline"],
+        lastActive: json["lastActive"].toDate(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -66,6 +72,8 @@ class Doctor {
         "specialties": specialties,
         "status": status,
         "password": password,
+        "isOnline": isOnline,
+        "lastActive": lastActive,
       };
 
   factory Doctor.fromFirestore(
@@ -87,6 +95,8 @@ class Doctor {
       specialties: data?["specialties"],
       status: data?["status"],
       password: data?["password"],
+      isOnline: data?["isOnline"],
+      lastActive: data?["lastActive"].toDate(),
     );
   }
 
@@ -104,6 +114,8 @@ class Doctor {
       "specialties": specialties,
       "status": status,
       "password": password,
+      "isOnline": isOnline,
+      "lastActive": lastActive,
     };
   }
 }

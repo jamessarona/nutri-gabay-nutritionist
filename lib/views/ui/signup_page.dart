@@ -93,6 +93,8 @@ class _SignUpPageState extends State<SignUpPage> {
       specialties: '',
       status: 'Pending',
       password: _password.text,
+      isOnline: true,
+      lastActive: DateTime.now(),
     );
 
     final json = user.toJson();

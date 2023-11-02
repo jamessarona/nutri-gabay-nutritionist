@@ -185,6 +185,7 @@ class _PatientListPageState extends State<PatientListPage> {
                                                 mainAxisCellCount: 4,
                                                 child: CustomPatientTile(
                                                   appointmentId: data['id'],
+                                                  doctorId: data['doctorId'],
                                                   patientId: data['patientId'],
                                                   patientNutritionalId: data[
                                                       'patientNutritionalId'],

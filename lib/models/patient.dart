@@ -13,7 +13,8 @@ class Patient {
   final String email;
   final String image;
   final String phone;
-
+  final bool isOnline;
+  final DateTime lastActive;
   Patient({
     required this.uid,
     required this.firstname,
@@ -21,6 +22,8 @@ class Patient {
     required this.email,
     required this.image,
     required this.phone,
+    required this.isOnline,
+    required this.lastActive,
   });
 
   factory Patient.fromJson(Map<String, dynamic> json) => Patient(
@@ -30,6 +33,8 @@ class Patient {
         email: json["email"],
         image: json["image"],
         phone: json["phone"],
+        isOnline: json["isOnline"],
+        lastActive: json["lastActive"].toDate(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -38,7 +43,9 @@ class Patient {
         "lastname": lastname,
         "email": email,
         "image": image,
-        "phone": phone
+        "phone": phone,
+        "isOnline": isOnline,
+        "lastActive": lastActive,
       };
 
   factory Patient.fromFirestore(
@@ -53,6 +60,8 @@ class Patient {
       email: data?["email"],
       image: data?["image"],
       phone: data?["phone"],
+      isOnline: data?["isOnline"],
+      lastActive: data?["lastActive"].toDate(),
     );
   }
 
@@ -63,7 +72,9 @@ class Patient {
       "lastname": lastname,
       "email": email,
       "image": image,
-      "phone": phone
+      "phone": phone,
+      "isOnline": isOnline,
+      "lastActive": lastActive,
     };
   }
 }

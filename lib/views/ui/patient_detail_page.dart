@@ -5,18 +5,22 @@ import 'package:nutri_gabay_nutritionist/models/patient_nutrition.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_buttons.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_container.dart';
+import 'package:nutri_gabay_nutritionist/views/ui/chat_page.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/nutrition_intervention_page.dart';
 
 class PatientDetailPage extends StatefulWidget {
   final String appointmentId;
+  final String doctorId;
   final String patientId;
   final String patientNutritionalId;
 
-  const PatientDetailPage(
-      {super.key,
-      required this.appointmentId,
-      required this.patientId,
-      required this.patientNutritionalId});
+  const PatientDetailPage({
+    super.key,
+    required this.appointmentId,
+    required this.doctorId,
+    required this.patientId,
+    required this.patientNutritionalId,
+  });
 
   @override
   State<PatientDetailPage> createState() => _PatientDetailPageState();
@@ -139,7 +143,17 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
             title: 'Chat',
             icon: '',
             iconData: Icons.phone,
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => ChatPage(
+                    doctorId: widget.doctorId,
+                    patientId: widget.patientId,
+                    appointmentId: widget.appointmentId,
+                  ),
+                ),
+              );
+            },
           ),
           const SizedBox(width: 10),
           PatientActionsContainer(

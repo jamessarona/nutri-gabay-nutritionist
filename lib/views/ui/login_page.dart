@@ -61,6 +61,7 @@ class _LoginPageState extends State<LoginPage> {
                         doctor.email, _password.text);
                     // ignore: unnecessary_null_comparison
                     if (userUID != null) {
+                      updateUserStatus(userUID);
                       widget.onSignIn!();
                     }
                   } on FirebaseAuthException {
@@ -82,6 +83,13 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {});
       });
     }
+  }
+
+  Future<void> updateUserStatus(String userUID) async {
+    await FirebaseFirestore.instance.collection('doctor').doc(userUID).update({
+      "isOnline": true,
+      "lastActive": DateTime.now(),
+    });
   }
 
   @override

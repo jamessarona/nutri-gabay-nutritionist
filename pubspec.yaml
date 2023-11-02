@@ -49,6 +49,7 @@ dependencies:
   flutter_dropzone: ^3.0.6
   dotted_border: ^2.1.0
   flutter_dropzone_web: ^3.0.12
+  timeago: ^3.6.0
   
   #firebase
   firebase_core: ^2.16.0

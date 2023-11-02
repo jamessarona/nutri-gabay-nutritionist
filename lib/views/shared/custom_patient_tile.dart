@@ -4,6 +4,7 @@ import 'package:nutri_gabay_nutritionist/views/ui/patient_detail_page.dart';
 
 class CustomPatientTile extends StatelessWidget {
   final String appointmentId;
+  final String doctorId;
   final String patientId;
   final String patientNutritionalId;
   final String name;
@@ -11,6 +12,7 @@ class CustomPatientTile extends StatelessWidget {
   const CustomPatientTile({
     super.key,
     required this.appointmentId,
+    required this.doctorId,
     required this.patientId,
     required this.patientNutritionalId,
     required this.name,
@@ -28,6 +30,7 @@ class CustomPatientTile extends StatelessWidget {
             MaterialPageRoute(
               builder: (ctx) => PatientDetailPage(
                 appointmentId: appointmentId,
+                doctorId: doctorId,
                 patientId: patientId,
                 patientNutritionalId: patientNutritionalId,
               ),
