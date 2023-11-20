@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:nutri_gabay_nutritionist/services/baseauth.dart';
@@ -9,8 +8,6 @@ import 'package:nutri_gabay_nutritionist/views/ui/appointment_page.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/profile_page.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/patient_list_page.dart';
 import 'package:universal_html/html.dart' as html;
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as web;
 
 class MainPage extends StatefulWidget {
   final BaseAuth auth;

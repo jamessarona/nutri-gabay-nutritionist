@@ -5,12 +5,16 @@ class PatientActionsContainer extends StatelessWidget {
   final String title;
   final String icon;
   final IconData iconData;
+  final Color color;
+  final bool isSmall;
   final void Function()? onTap;
   const PatientActionsContainer({
     super.key,
     required this.title,
     required this.icon,
     required this.iconData,
+    required this.color,
+    required this.isSmall,
     this.onTap,
   });
 
@@ -19,38 +23,41 @@ class PatientActionsContainer extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(
-        height: 180,
-        width: 100,
+        height: isSmall ? 180 : 250,
+        width: isSmall ? 100 : 180,
         child: Stack(
           alignment: AlignmentDirectional.topCenter,
           children: [
             Positioned(
-              top: 40,
+              top: isSmall ? 40 : 60,
               child: Container(
-                height: 110,
-                width: 100,
-                padding: const EdgeInsets.only(top: 50),
+                height: isSmall ? 110 : 190,
+                width: isSmall ? 100 : 170,
+                padding: EdgeInsets.only(top: isSmall ? 50 : 90),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
                   border: Border.all(),
                 ),
                 child: Text(
                   title,
-                  style: appstyle(13, Colors.black, FontWeight.normal),
+                  style: appstyle(isSmall ? 13 : 18, Colors.black,
+                      isSmall ? FontWeight.normal : FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
               ),
             ),
             Container(
-              width: 80,
-              height: 80,
+              padding: EdgeInsets.all(isSmall ? 15 : 25),
+              width: isSmall ? 80 : 130,
+              height: isSmall ? 80 : 130,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50),
-                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(100),
+                color: color,
               ),
               child: icon != ''
                   ? Image.asset(
-                      'assets/images/$icon.png',
+                      'assets/icons/$icon.png',
                     )
                   : const Icon(Icons.phone, size: 50),
             ),

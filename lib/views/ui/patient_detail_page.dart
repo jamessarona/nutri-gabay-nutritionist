@@ -6,6 +6,7 @@ import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_buttons.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_container.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/chat_page.dart';
+import 'package:nutri_gabay_nutritionist/views/ui/monitoring_evaluation_page.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/nutrition_intervention_page.dart';
 
 class PatientDetailPage extends StatefulWidget {
@@ -141,8 +142,10 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
         children: [
           PatientActionsContainer(
             title: 'Chat',
-            icon: '',
+            icon: 'chat',
             iconData: Icons.phone,
+            color: const Color.fromARGB(255, 253, 195, 10),
+            isSmall: true,
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -157,16 +160,11 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
           ),
           const SizedBox(width: 10),
           PatientActionsContainer(
-            title: 'Diagnose\nUpdate',
-            icon: '',
-            iconData: Icons.phone,
-            onTap: () {},
-          ),
-          const SizedBox(width: 10),
-          PatientActionsContainer(
             title: 'Nutrition\nIntervention',
-            icon: '',
+            icon: 'nutri-intervention',
             iconData: Icons.phone,
+            color: customColor,
+            isSmall: true,
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -181,9 +179,22 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
           const SizedBox(width: 10),
           PatientActionsContainer(
             title: 'Monitoring and \nEvaluation',
-            icon: '',
+            icon: 'monitoring-evaluation',
             iconData: Icons.phone,
-            onTap: () {},
+            color: const Color.fromARGB(255, 252, 67, 66),
+            isSmall: true,
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => MonitoringEvaluationPage(
+                    appointmentId: widget.appointmentId,
+                    doctorId: widget.doctorId,
+                    patientId: widget.patientId,
+                    patientNutritionalId: widget.patientNutritionalId,
+                  ),
+                ),
+              );
+            },
           ),
           const SizedBox(width: 10),
         ],
