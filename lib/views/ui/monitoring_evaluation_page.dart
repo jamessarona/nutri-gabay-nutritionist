@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_container.dart';
+import 'package:nutri_gabay_nutritionist/views/ui/create_evaluation_page.dart';
 
 class MonitoringEvaluationPage extends StatefulWidget {
   final String appointmentId;
@@ -20,30 +21,38 @@ class MonitoringEvaluationPage extends StatefulWidget {
       _MonitoringEvaluationPageState();
 }
 
-List<Widget> buildFormWidger() {
-  return [
-    PatientActionsContainer(
-      title: 'Create a form',
-      icon: 'add-form',
-      iconData: Icons.phone,
-      color: const Color.fromARGB(255, 253, 195, 10),
-      isSmall: false,
-      onTap: () {},
-    ),
-    const SizedBox(width: 50, height: 50),
-    PatientActionsContainer(
-      title: 'Forms',
-      icon: 'forms',
-      iconData: Icons.phone,
-      color: const Color.fromARGB(255, 252, 67, 66),
-      isSmall: false,
-      onTap: () {},
-    ),
-  ];
-}
-
 class _MonitoringEvaluationPageState extends State<MonitoringEvaluationPage> {
   late Size screenSize;
+  List<Widget> buildFormWidger(BuildContext context) {
+    return [
+      PatientActionsContainer(
+        title: 'Create a form',
+        icon: 'add-form',
+        iconData: Icons.phone,
+        color: const Color.fromARGB(255, 253, 195, 10),
+        isSmall: false,
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (ctx) => CreateEvaluationPage(
+                appointmentId: widget.appointmentId,
+              ),
+            ),
+          );
+        },
+      ),
+      const SizedBox(width: 50, height: 50),
+      PatientActionsContainer(
+        title: 'Forms',
+        icon: 'forms',
+        iconData: Icons.phone,
+        color: const Color.fromARGB(255, 252, 67, 66),
+        isSmall: false,
+        onTap: () {},
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     screenSize = MediaQuery.of(context).size;
@@ -70,12 +79,12 @@ class _MonitoringEvaluationPageState extends State<MonitoringEvaluationPage> {
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: buildFormWidger(),
+                children: buildFormWidger(context),
               )
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: buildFormWidger(),
+                children: buildFormWidger(context),
               ),
       ),
     );
