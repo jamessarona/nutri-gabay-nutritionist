@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
+import 'package:nutri_gabay_nutritionist/views/ui/view_evaluation_question_page.dart';
 
 class ViewEvaluationPage extends StatefulWidget {
   final String appointmentId;
@@ -78,7 +79,18 @@ class _ViewEvaluationPageState extends State<ViewEvaluationPage> {
                           crossAxisCellCount: 1,
                           mainAxisCellCount: 4,
                           child: GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ViewEvaluationQuestionPage(
+                                    appointmentId: widget.appointmentId,
+                                    formId: data['uid'],
+                                  ),
+                                ),
+                              );
+                            },
                             child: Card(
                               color: Colors.white,
                               child: Container(
