@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_container.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/create_evaluation_page.dart';
+import 'package:nutri_gabay_nutritionist/views/ui/view_evaluation_page.dart';
 
 class MonitoringEvaluationPage extends StatefulWidget {
   final String appointmentId;
@@ -48,7 +49,15 @@ class _MonitoringEvaluationPageState extends State<MonitoringEvaluationPage> {
         iconData: Icons.phone,
         color: const Color.fromARGB(255, 252, 67, 66),
         isSmall: false,
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (ctx) => ViewEvaluationPage(
+                appointmentId: widget.appointmentId,
+              ),
+            ),
+          );
+        },
       ),
     ];
   }
