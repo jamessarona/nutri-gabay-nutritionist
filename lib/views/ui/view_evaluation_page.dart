@@ -87,6 +87,7 @@ class _ViewEvaluationPageState extends State<ViewEvaluationPage> {
                                       ViewEvaluationQuestionPage(
                                     appointmentId: widget.appointmentId,
                                     formId: data['uid'],
+                                    formName: data['name'],
                                   ),
                                 ),
                               );
