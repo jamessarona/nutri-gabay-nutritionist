@@ -254,25 +254,33 @@ class _ViewEvaluationQuestionPageState
                                           ),
                                         ),
                                         const SizedBox(height: 10),
-                                        // Container(
-                                        //   margin:
-                                        //       const EdgeInsets.only(right: 10),
-                                        //   alignment: Alignment.centerRight,
-                                        //   child: IconButton(
-                                        //     alignment: Alignment.centerRight,
-                                        //     onPressed: () {
-                                        //       setState(() {
-                                        //         _questionController.removeAt(index);
-                                        //         _typeController.removeAt(index);
-                                        //       });
-                                        //     },
-                                        //     icon: const Icon(
-                                        //       Icons.delete_outline,
-                                        //       size: 30,
-                                        //       color: Colors.black54,
-                                        //     ),
-                                        //   ),
-                                        // )
+                                        Container(
+                                          margin: const EdgeInsets.only(
+                                              top: 10, left: 10, right: 10),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "Answer: ",
+                                                style: appstyle(
+                                                    14,
+                                                    Colors.black,
+                                                    FontWeight.normal),
+                                              ),
+                                              const SizedBox(width: 5),
+                                              Text(
+                                                data['answer'],
+                                                style: appstyle(
+                                                        14,
+                                                        Colors.black,
+                                                        FontWeight.bold)
+                                                    .copyWith(
+                                                  decoration:
+                                                      TextDecoration.underline,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )
                                       ],
                                     ),
                                   ),
@@ -286,26 +294,6 @@ class _ViewEvaluationQuestionPageState
                   );
                 },
               ),
-              // Container(
-              //   height: 100,
-              //   width: double.infinity,
-              //   margin: const EdgeInsets.only(right: 20),
-              //   child: Row(
-              //     mainAxisAlignment: MainAxisAlignment.end,
-              //     children: [
-              //       SizedBox(
-              //         child: CustomButton(
-              //           onPress: () {
-              //             // saveForm();
-              //           },
-              //           label: 'Save Form',
-              //           labelSize: 15,
-              //           radius: 5,
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // )
             ],
           ),
         ),

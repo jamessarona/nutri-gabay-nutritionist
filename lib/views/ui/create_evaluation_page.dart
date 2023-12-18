@@ -56,6 +56,7 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
         uid: docForm.id,
         name: _formController.text,
         date: DateTime.now(),
+        answered: false,
       );
 
       final formJson = formQuestion.toJson();
@@ -75,6 +76,7 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
           question: _questionController[i].text,
           type: _typeController[i].text,
           required: true,
+          answer: '',
         );
         final questionsJson = questions.toJson();
         await docForm.set(questionsJson);

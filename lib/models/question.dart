@@ -13,6 +13,7 @@ class Question {
   final String question;
   final String type;
   final bool required;
+  final String answer;
 
   Question({
     required this.uid,
@@ -21,6 +22,7 @@ class Question {
     required this.question,
     required this.type,
     required this.required,
+    required this.answer,
   });
 
   factory Question.fromJson(Map<String, dynamic> json) => Question(
@@ -30,6 +32,7 @@ class Question {
         question: json["question"],
         type: json["type"],
         required: json["required"],
+        answer: json["answer"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -39,6 +42,7 @@ class Question {
         "question": question,
         "type": type,
         "required": required,
+        "answer": answer,
       };
 
   factory Question.fromFirestore(
@@ -53,6 +57,7 @@ class Question {
       question: data?["question"],
       type: data?["type"],
       required: data?["required"],
+      answer: data?["answer"],
     );
   }
 
@@ -64,6 +69,7 @@ class Question {
       "question": question,
       "type": type,
       "required": required,
+      "answer": answer,
     };
   }
 }

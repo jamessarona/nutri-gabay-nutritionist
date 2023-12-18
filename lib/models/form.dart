@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 FormQuestion formQuestionsFromJson(String str) =>
@@ -11,23 +10,25 @@ class FormQuestion {
   final String uid;
   final String name;
   final DateTime date;
-
-  FormQuestion({
-    required this.uid,
-    required this.name,
-    required this.date,
-  });
+  final bool answered;
+  FormQuestion(
+      {required this.uid,
+      required this.name,
+      required this.date,
+      required this.answered});
 
   factory FormQuestion.fromJson(Map<String, dynamic> json) => FormQuestion(
         uid: json["uid"],
         name: json["name"],
         date: json["date"].toDate(),
+        answered: json["answered"],
       );
 
   Map<String, dynamic> toJson() => {
         "uid": uid,
         "name": name,
         "date": date,
+        "answered": answered,
       };
 
   factory FormQuestion.fromFirestore(
@@ -39,6 +40,7 @@ class FormQuestion {
       uid: data?["uid"],
       name: data?["name"],
       date: data?["date"].toDate(),
+      answered: data?["answered"],
     );
   }
 
@@ -47,6 +49,7 @@ class FormQuestion {
       "uid": uid,
       "name": name,
       "date": date,
+      "answered": answered,
     };
   }
 }
