@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:nutri_gabay_nutritionist/models/patient.dart';
 import 'package:nutri_gabay_nutritionist/models/patient_nutrition.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
-import 'package:nutri_gabay_nutritionist/views/shared/custom_buttons.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_container.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/chat_page.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/monitoring_evaluation_page.dart';
@@ -233,18 +232,18 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
         width: double.infinity,
         child: ListView(
           children: [
-            const SizedBox(height: 20),
-            Container(
-              width: 150,
-              alignment: AlignmentDirectional.centerEnd,
-              margin: EdgeInsets.symmetric(horizontal: screenSize.width * 0.01),
-              child: CustomButton(
-                onPress: () {},
-                label: 'Download Patient Information',
-                labelSize: 15,
-                radius: 5,
-              ),
-            ),
+            // const SizedBox(height: 20),
+            // Container(
+            //   width: 150,
+            //   alignment: AlignmentDirectional.centerEnd,
+            //   margin: EdgeInsets.symmetric(horizontal: screenSize.width * 0.01),
+            //   child: CustomButton(
+            //     onPress: () {},
+            //     label: 'Download Patient Information',
+            //     labelSize: 15,
+            //     radius: 5,
+            //   ),
+            // ),
             const SizedBox(height: 20),
             Container(
               margin: EdgeInsets.symmetric(horizontal: screenSize.width * 0.01),

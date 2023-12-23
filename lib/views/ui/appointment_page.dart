@@ -217,7 +217,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
   Widget buildAppointmentRequest() {
     return Container(
       height: 800,
-      width: screenSize.width > 500 ? screenSize.width * 0.4 : double.infinity,
+      width: screenSize.width > 700 ? screenSize.width * 0.4 : double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         color: Colors.white,
@@ -341,7 +341,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                 children: [
                                   const SizedBox(width: 70),
                                   RichText(
-                                    maxLines: 1,
+                                    maxLines: 2,
                                     text: TextSpan(
                                       text: 'BMI: ',
                                       style: appstyle(
@@ -363,61 +363,62 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                     ),
                                   ),
                                   const SizedBox(width: 70),
-                                  RichText(
-                                    maxLines: 1,
-                                    text: TextSpan(
-                                      text: 'Risk Level: ',
-                                      style: appstyle(
-                                          13, customColor, FontWeight.bold),
-                                      children: <TextSpan>[
-                                        TextSpan(
-                                          text:
-                                              '${getPatientNutritionInfoByField(data['patientId'], 'points')} - ',
-                                          style: appstyle(13, Colors.black,
-                                              FontWeight.bold),
-                                        ),
-                                        TextSpan(
-                                          text: getPatientNutritionInfoByField(
-                                              data['patientId'], 'result'),
-                                          style: appstyle(
-                                              13, customColor, FontWeight.bold),
-                                        ),
-                                      ],
+                                  Expanded(
+                                    child: RichText(
+                                      maxLines: 2,
+                                      text: TextSpan(
+                                        text: 'Risk Level: ',
+                                        style: appstyle(
+                                            13, customColor, FontWeight.bold),
+                                        children: <TextSpan>[
+                                          TextSpan(
+                                            text:
+                                                '${getPatientNutritionInfoByField(data['patientId'], 'points')} - ',
+                                            style: appstyle(13, Colors.black,
+                                                FontWeight.bold),
+                                          ),
+                                          TextSpan(
+                                            text:
+                                                getPatientNutritionInfoByField(
+                                                    data['patientId'],
+                                                    'result'),
+                                            style: appstyle(13, customColor,
+                                                FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                  Expanded(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            showAlertDialog(
-                                                context, data['id'], false);
-                                          },
-                                          child: Text(
-                                            'Reject',
-                                            style: appstyle(14, Colors.black,
-                                                FontWeight.normal),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        GestureDetector(
-                                          onTap: () {
-                                            showAlertDialog(
-                                                context, data['id'], true);
-                                          },
-                                          child: Text(
-                                            'Accept',
-                                            style: appstyle(14, customColor,
-                                                FontWeight.normal),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 10),
-                                      ],
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      showAlertDialog(
+                                          context, data['id'], false);
+                                    },
+                                    child: Text(
+                                      'Reject',
+                                      style: appstyle(
+                                          14, Colors.black, FontWeight.normal),
                                     ),
-                                  )
+                                  ),
+                                  const SizedBox(width: 10),
+                                  GestureDetector(
+                                    onTap: () {
+                                      showAlertDialog(
+                                          context, data['id'], true);
+                                    },
+                                    child: Text(
+                                      'Accept',
+                                      style: appstyle(
+                                          14, customColor, FontWeight.normal),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
                                 ],
                               ),
                               const SizedBox(height: 10),
@@ -439,7 +440,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
   Widget buildSchedules() {
     return Container(
       height: 800,
-      width: screenSize.width > 500 ? screenSize.width * 0.4 : double.infinity,
+      width: screenSize.width > 700 ? screenSize.width * 0.4 : double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         color: Colors.white,
@@ -523,7 +524,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
             ),
           ),
           Expanded(
-            child: screenSize.width > 500
+            child: screenSize.width > 700
                 ? Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [

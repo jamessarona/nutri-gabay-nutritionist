@@ -261,14 +261,14 @@ class _ChatPageState extends State<ChatPage> {
                           ],
                         ),
                         Expanded(child: Container()),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            FontAwesomeIcons.phone,
-                            size: 20,
-                            color: customColor,
-                          ),
-                        ),
+                        // IconButton(
+                        //   onPressed: () {},
+                        //   icon: const Icon(
+                        //     FontAwesomeIcons.phone,
+                        //     size: 20,
+                        //     color: customColor,
+                        //   ),
+                        // ),
                         const SizedBox(width: 7.5),
                       ],
                     ),

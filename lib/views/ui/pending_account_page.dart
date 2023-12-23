@@ -27,7 +27,7 @@ class _PendingAccountPageState extends State<PendingAccountPage> {
               decoration: const BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage("assets/images/logo.png"),
-                  fit: BoxFit.fill,
+                  fit: BoxFit.fitHeight,
                 ),
               ),
             ),
