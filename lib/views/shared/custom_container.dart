@@ -67,3 +67,50 @@ class PatientActionsContainer extends StatelessWidget {
     );
   }
 }
+
+class DiagnosisDomainContainer extends StatelessWidget {
+  final TextEditingController controller;
+  final FormFieldValidator<String>? validation;
+  final bool isEdit;
+  const DiagnosisDomainContainer({
+    super.key,
+    required this.controller,
+    this.validation,
+    required this.isEdit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 100,
+      width: 100,
+      padding: const EdgeInsets.only(top: 15),
+      color: Colors.grey.shade300,
+      child: TextFormField(
+        controller: controller,
+        enabled: isEdit,
+        keyboardType: TextInputType.multiline,
+        textAlign: TextAlign.center,
+        validator: validation,
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          filled: false,
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+          hintText: isEdit ? 'Input a Domain here' : '',
+          hintStyle: appstyle(
+            17,
+            Colors.black,
+            FontWeight.normal,
+          ),
+        ),
+        style: appstyle(
+          17,
+          Colors.black,
+          FontWeight.normal,
+        ),
+        maxLines: 5,
+      ),
+    );
+  }
+}

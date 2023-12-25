@@ -6,6 +6,8 @@ import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_container.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/chat_page.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/monitoring_evaluation_page.dart';
+import 'package:nutri_gabay_nutritionist/views/ui/nutrition_assessment_page.dart';
+import 'package:nutri_gabay_nutritionist/views/ui/nutrition_diagnosis_page.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/nutrition_intervention_page.dart';
 
 class PatientDetailPage extends StatefulWidget {
@@ -137,65 +139,113 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
 
   List<Widget> buildActions() {
     return [
-      Row(
+      Column(
         children: [
-          PatientActionsContainer(
-            title: 'Chat',
-            icon: 'chat',
-            iconData: Icons.phone,
-            color: const Color.fromARGB(255, 253, 195, 10),
-            isSmall: true,
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (ctx) => ChatPage(
-                    doctorId: widget.doctorId,
-                    patientId: widget.patientId,
-                    appointmentId: widget.appointmentId,
-                  ),
-                ),
-              );
-            },
+          Row(
+            children: [
+              PatientActionsContainer(
+                title: 'Nutrition Assessment',
+                icon: 'nutrition-assessment',
+                iconData: Icons.phone,
+                color: const Color.fromARGB(255, 253, 195, 10),
+                isSmall: true,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (ctx) => NutritionAssessmentPage(
+                        appointmentId: widget.appointmentId,
+                        doctorId: widget.doctorId,
+                        patientId: widget.patientId,
+                        patientNutritionalId: widget.patientNutritionalId,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(width: 10),
+              PatientActionsContainer(
+                title: 'Nutrition Diagnosis',
+                icon: 'diagnosis',
+                iconData: Icons.phone,
+                color: const Color.fromARGB(255, 253, 195, 10),
+                isSmall: true,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (ctx) => NutritionDiagnosisPage(
+                        appointmentId: widget.appointmentId,
+                        doctorId: widget.doctorId,
+                        patientId: widget.patientId,
+                        patientNutritionalId: widget.patientNutritionalId,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(width: 10),
+              PatientActionsContainer(
+                title: 'Nutrition\nIntervention',
+                icon: 'nutri-intervention',
+                iconData: Icons.phone,
+                color: customColor,
+                isSmall: true,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (ctx) => NutritionInterventionPage(
+                        appointmentId: widget.appointmentId,
+                        patientNutritionalId: widget.patientNutritionalId,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(width: 10),
+              PatientActionsContainer(
+                title: 'Monitoring and \nEvaluation',
+                icon: 'monitoring-evaluation',
+                iconData: Icons.phone,
+                color: const Color.fromARGB(255, 252, 67, 66),
+                isSmall: true,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (ctx) => MonitoringEvaluationPage(
+                        appointmentId: widget.appointmentId,
+                        doctorId: widget.doctorId,
+                        patientId: widget.patientId,
+                        patientNutritionalId: widget.patientNutritionalId,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(width: 10),
+            ],
           ),
-          const SizedBox(width: 10),
-          PatientActionsContainer(
-            title: 'Nutrition\nIntervention',
-            icon: 'nutri-intervention',
-            iconData: Icons.phone,
-            color: customColor,
-            isSmall: true,
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (ctx) => NutritionInterventionPage(
-                    appointmentId: widget.appointmentId,
-                    patientNutritionalId: widget.patientNutritionalId,
-                  ),
-                ),
-              );
-            },
+          Row(
+            children: [
+              PatientActionsContainer(
+                title: 'Chat',
+                icon: 'chat',
+                iconData: Icons.phone,
+                color: const Color.fromARGB(255, 253, 195, 10),
+                isSmall: true,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (ctx) => ChatPage(
+                        doctorId: widget.doctorId,
+                        patientId: widget.patientId,
+                        appointmentId: widget.appointmentId,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(width: 10),
+            ],
           ),
-          const SizedBox(width: 10),
-          PatientActionsContainer(
-            title: 'Monitoring and \nEvaluation',
-            icon: 'monitoring-evaluation',
-            iconData: Icons.phone,
-            color: const Color.fromARGB(255, 252, 67, 66),
-            isSmall: true,
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (ctx) => MonitoringEvaluationPage(
-                    appointmentId: widget.appointmentId,
-                    doctorId: widget.doctorId,
-                    patientId: widget.patientId,
-                    patientNutritionalId: widget.patientNutritionalId,
-                  ),
-                ),
-              );
-            },
-          ),
-          const SizedBox(width: 10),
         ],
       )
     ];
