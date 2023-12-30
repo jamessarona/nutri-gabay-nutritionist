@@ -83,12 +83,14 @@ class _ChatPageState extends State<ChatPage> {
           .doc();
 
       Message message = Message(
-          id: messageDoc.id,
-          senderId: widget.doctorId,
-          receiverId: widget.patientId,
-          content: textController.text,
-          sentTime: DateTime.now(),
-          messageType: MessageType.text);
+        id: messageDoc.id,
+        senderId: widget.doctorId,
+        receiverId: widget.patientId,
+        content: textController.text,
+        sentTime: DateTime.now(),
+        messageType: MessageType.text,
+        isSeen: false,
+      );
       final json = message.toJson();
 
       await messageDoc.set(json);
@@ -120,12 +122,14 @@ class _ChatPageState extends State<ChatPage> {
           .doc();
 
       Message message = Message(
-          id: messageDoc.id,
-          senderId: widget.doctorId,
-          receiverId: widget.patientId,
-          content: '',
-          sentTime: DateTime.now(),
-          messageType: MessageType.image);
+        id: messageDoc.id,
+        senderId: widget.doctorId,
+        receiverId: widget.patientId,
+        content: '',
+        sentTime: DateTime.now(),
+        messageType: MessageType.image,
+        isSeen: false,
+      );
       final json = message.toJson();
 
       await messageDoc.set(json);

@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:nutri_gabay_nutritionist/models/assessment.dart';
+import 'package:nutri_gabay_nutritionist/models/message_controller.dart';
 import 'package:nutri_gabay_nutritionist/models/patient.dart';
 import 'package:nutri_gabay_nutritionist/models/patient_nutrition.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
@@ -9,6 +11,8 @@ import 'package:nutri_gabay_nutritionist/views/ui/monitoring_evaluation_page.dar
 import 'package:nutri_gabay_nutritionist/views/ui/nutrition_assessment_page.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/nutrition_diagnosis_page.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/nutrition_intervention_page.dart';
+// ignore: depend_on_referenced_packages
+import 'package:badges/badges.dart' as badges;
 
 class PatientDetailPage extends StatefulWidget {
   final String appointmentId;
@@ -33,6 +37,9 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
 
   Patient? patient;
   PatientNutrition? patientNutrition;
+
+  int chatCount = 0;
+  int assessmentCount = 0;
 
   void getPatientInfo() async {
     final ref = FirebaseFirestore.instance
@@ -143,24 +150,45 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
         children: [
           Row(
             children: [
-              PatientActionsContainer(
-                title: 'Nutrition Assessment',
-                icon: 'nutrition-assessment',
-                iconData: Icons.phone,
-                color: const Color.fromARGB(255, 253, 195, 10),
-                isSmall: true,
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (ctx) => NutritionAssessmentPage(
-                        appointmentId: widget.appointmentId,
-                        doctorId: widget.doctorId,
-                        patientId: widget.patientId,
-                        patientNutritionalId: widget.patientNutritionalId,
+              badges.Badge(
+                badgeContent: Container(
+                  margin: const EdgeInsets.all(5),
+                  child: Text(
+                    assessmentCount > 9 ? "9+" : assessmentCount.toString(),
+                    style: appstyle(20, Colors.black, FontWeight.bold),
+                  ),
+                ),
+                badgeStyle: const badges.BadgeStyle(
+                  borderSide: BorderSide(
+                    color: Colors.black,
+                    width: 2,
+                  ),
+                ),
+                showBadge: assessmentCount > 0,
+                position: badges.BadgePosition.topEnd(top: -3, end: 0),
+                child: PatientActionsContainer(
+                  title: 'Nutrition Assessment',
+                  icon: 'nutrition-assessment',
+                  iconData: Icons.phone,
+                  color: const Color.fromARGB(255, 253, 195, 10),
+                  isSmall: true,
+                  onTap: () {
+                    Navigator.of(context)
+                        .push(
+                      MaterialPageRoute(
+                        builder: (ctx) => NutritionAssessmentPage(
+                          appointmentId: widget.appointmentId,
+                          doctorId: widget.doctorId,
+                          patientId: widget.patientId,
+                          patientNutritionalId: widget.patientNutritionalId,
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    )
+                        .whenComplete(() async {
+                      await getUpdates();
+                    });
+                  },
+                ),
               ),
               const SizedBox(width: 10),
               PatientActionsContainer(
@@ -170,7 +198,8 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
                 color: const Color.fromARGB(255, 253, 195, 10),
                 isSmall: true,
                 onTap: () {
-                  Navigator.of(context).push(
+                  Navigator.of(context)
+                      .push(
                     MaterialPageRoute(
                       builder: (ctx) => NutritionDiagnosisPage(
                         appointmentId: widget.appointmentId,
@@ -179,7 +208,10 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
                         patientNutritionalId: widget.patientNutritionalId,
                       ),
                     ),
-                  );
+                  )
+                      .whenComplete(() async {
+                    await getUpdates();
+                  });
                 },
               ),
               const SizedBox(width: 10),
@@ -190,14 +222,20 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
                 color: customColor,
                 isSmall: true,
                 onTap: () {
-                  Navigator.of(context).push(
+                  Navigator.of(context)
+                      .push(
                     MaterialPageRoute(
                       builder: (ctx) => NutritionInterventionPage(
                         appointmentId: widget.appointmentId,
                         patientNutritionalId: widget.patientNutritionalId,
+                        doctorId: widget.doctorId,
+                        patientId: widget.patientId,
                       ),
                     ),
-                  );
+                  )
+                      .whenComplete(() async {
+                    await getUpdates();
+                  });
                 },
               ),
               const SizedBox(width: 10),
@@ -208,7 +246,8 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
                 color: const Color.fromARGB(255, 252, 67, 66),
                 isSmall: true,
                 onTap: () {
-                  Navigator.of(context).push(
+                  Navigator.of(context)
+                      .push(
                     MaterialPageRoute(
                       builder: (ctx) => MonitoringEvaluationPage(
                         appointmentId: widget.appointmentId,
@@ -217,7 +256,10 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
                         patientNutritionalId: widget.patientNutritionalId,
                       ),
                     ),
-                  );
+                  )
+                      .whenComplete(() async {
+                    await getUpdates();
+                  });
                 },
               ),
               const SizedBox(width: 10),
@@ -225,23 +267,44 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
           ),
           Row(
             children: [
-              PatientActionsContainer(
-                title: 'Chat',
-                icon: 'chat',
-                iconData: Icons.phone,
-                color: const Color.fromARGB(255, 253, 195, 10),
-                isSmall: true,
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (ctx) => ChatPage(
-                        doctorId: widget.doctorId,
-                        patientId: widget.patientId,
-                        appointmentId: widget.appointmentId,
+              badges.Badge(
+                badgeContent: Container(
+                  margin: const EdgeInsets.all(5),
+                  child: Text(
+                    chatCount > 9 ? "9+" : chatCount.toString(),
+                    style: appstyle(20, Colors.black, FontWeight.bold),
+                  ),
+                ),
+                badgeStyle: const badges.BadgeStyle(
+                  borderSide: BorderSide(
+                    color: Colors.black,
+                    width: 2,
+                  ),
+                ),
+                showBadge: chatCount > 0,
+                position: badges.BadgePosition.topEnd(top: -3, end: 0),
+                child: PatientActionsContainer(
+                  title: 'Chat',
+                  icon: 'chat',
+                  iconData: Icons.phone,
+                  color: const Color.fromARGB(255, 253, 195, 10),
+                  isSmall: true,
+                  onTap: () {
+                    Navigator.of(context)
+                        .push(
+                      MaterialPageRoute(
+                        builder: (ctx) => ChatPage(
+                          doctorId: widget.doctorId,
+                          patientId: widget.patientId,
+                          appointmentId: widget.appointmentId,
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    )
+                        .whenComplete(() async {
+                      await getUpdates();
+                    });
+                  },
+                ),
               ),
               const SizedBox(width: 10),
             ],
@@ -251,10 +314,55 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
     ];
   }
 
+  Future<void> getNewChatCount() async {
+    final collection = FirebaseFirestore.instance
+        .collection('appointment')
+        .doc(widget.appointmentId)
+        .collection('chat')
+        .where(
+          Filter.and(Filter("isSeen", isEqualTo: false),
+              Filter("receiverId", isEqualTo: widget.doctorId)),
+        )
+        .withConverter(
+          fromFirestore: Message.fromFirestore,
+          toFirestore: (Message msg, _) => msg.toFirestore(),
+        );
+
+    await collection.get().then(
+      (querySnapshot) {
+        chatCount = querySnapshot.docs.length;
+      },
+    );
+  }
+
+  Future<void> getNewAssessmentCount() async {
+    final collection = FirebaseFirestore.instance
+        .collection('appointment')
+        .doc(widget.appointmentId)
+        .collection('assessment')
+        .withConverter(
+          fromFirestore: Assessment.fromFirestore,
+          toFirestore: (Assessment assessment, _) => assessment.toFirestore(),
+        );
+
+    await collection.get().then(
+      (querySnapshot) {
+        assessmentCount = querySnapshot.docs.length;
+      },
+    );
+  }
+
+  Future<void> getUpdates() async {
+    await getNewChatCount();
+    await getNewAssessmentCount();
+    setState(() {});
+  }
+
   @override
   void initState() {
     getPatientInfo();
     getPatientNutritionInfo();
+    getUpdates();
     super.initState();
   }
 

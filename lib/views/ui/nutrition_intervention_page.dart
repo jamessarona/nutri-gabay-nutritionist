@@ -9,15 +9,20 @@ import 'package:intl/intl.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_buttons.dart';
 import 'package:flutter/foundation.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import 'package:nutri_gabay_nutritionist/views/ui/nutrition_intervention_detail_page.dart';
 
 class NutritionInterventionPage extends StatefulWidget {
   final String appointmentId;
   final String patientNutritionalId;
-  const NutritionInterventionPage(
-      {super.key,
-      required this.appointmentId,
-      required this.patientNutritionalId});
+  final String doctorId;
+  final String patientId;
+  const NutritionInterventionPage({
+    super.key,
+    required this.appointmentId,
+    required this.patientNutritionalId,
+    required this.doctorId,
+    required this.patientId,
+  });
 
   @override
   State<NutritionInterventionPage> createState() =>
@@ -168,16 +173,31 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
           if (!snapshot.hasData) {
             return const Text('No Records');
           }
+
           return ListView(
             children: snapshot.data!.docs
                 .map(
                   (DocumentSnapshot document) {
                     Map<String, dynamic> data =
                         document.data()! as Map<String, dynamic>;
-
                     return GestureDetector(
                       onTap: () {
-                        launchUrlString(data['url']);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (ctx) => NutritionInterventionDetailPage(
+                              appointmentId: widget.appointmentId,
+                              patientNutritionalId: widget.patientNutritionalId,
+                              doctorId: widget.doctorId,
+                              patientId: widget.patientId,
+                              fileId: data['id'],
+                              fileType: data['type'],
+                              fileName: data['name'],
+                              fileDate: formatDate(data['date']),
+                              fileSize: data['size'],
+                              fileUrl: data['url'],
+                            ),
+                          ),
+                        );
                       },
                       child: Container(
                         margin: const EdgeInsets.only(top: 10),
