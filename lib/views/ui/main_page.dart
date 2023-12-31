@@ -7,6 +7,7 @@ import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/appointment_page.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/profile_page.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/patient_list_page.dart';
+import 'package:nutri_gabay_nutritionist/views/ui/setting_page.dart';
 import 'package:universal_html/html.dart' as html;
 
 class MainPage extends StatefulWidget {
@@ -104,7 +105,14 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
               children: [
                 SideMenuItem(
                   title: 'Settings',
-                  onTap: (index, _) {},
+                  onTap: (index, _) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SettingPage(),
+                      ),
+                    );
+                  },
                   icon: const Icon(Icons.settings),
                 ),
                 SideMenuItem(

@@ -10,6 +10,7 @@ class UserCredentialTextField extends StatelessWidget {
   final IconData? icon;
   final FormFieldValidator<String>? validation;
   final void Function()? onTap;
+  final IconButton? suffixIcon;
   const UserCredentialTextField({
     super.key,
     required this.controller,
@@ -19,6 +20,7 @@ class UserCredentialTextField extends StatelessWidget {
     this.icon,
     this.validation,
     this.onTap,
+    this.suffixIcon,
   });
 
   @override
@@ -47,15 +49,16 @@ class UserCredentialTextField extends StatelessWidget {
         fillColor: Colors.white70,
         contentPadding:
             const EdgeInsets.symmetric(vertical: 0, horizontal: 20.0),
-        suffixIcon: icon != null
-            ? GestureDetector(
-                onTap: onTap,
-                child: Icon(
-                  icon,
-                  size: 20,
-                ),
-              )
-            : null,
+        suffixIcon: suffixIcon ??
+            (icon != null
+                ? GestureDetector(
+                    onTap: onTap,
+                    child: Icon(
+                      icon,
+                      size: 20,
+                    ),
+                  )
+                : null),
       ),
       obscureText: isObscure,
     );
