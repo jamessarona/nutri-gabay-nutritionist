@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nutri_gabay_nutritionist/models/assessment.dart';
-import 'package:nutri_gabay_nutritionist/models/comment.dart';
 import 'package:nutri_gabay_nutritionist/models/diagnosis.dart';
 import 'package:nutri_gabay_nutritionist/models/form.dart';
 import 'package:nutri_gabay_nutritionist/models/message_controller.dart';
