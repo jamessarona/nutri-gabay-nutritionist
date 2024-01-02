@@ -8,6 +8,7 @@ import 'package:nutri_gabay_nutritionist/models/appointment.dart';
 import 'package:nutri_gabay_nutritionist/models/doctor.dart';
 import 'package:nutri_gabay_nutritionist/models/message_controller.dart';
 import 'package:nutri_gabay_nutritionist/models/patient.dart';
+import 'package:nutri_gabay_nutritionist/services/baseauth.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -101,8 +102,41 @@ class _ChatPageState extends State<ChatPage> {
     FocusScope.of(context).unfocus();
   }
 
+  Future<void> getNewChats() async {
+    String uid = await FireBaseAuth().currentUser();
+
+    final collection = FirebaseFirestore.instance
+        .collection('appointment')
+        .doc(widget.appointmentId)
+        .collection('chat')
+        .where(
+          Filter.and(Filter("isSeen", isEqualTo: false),
+              Filter("receiverId", isEqualTo: uid)),
+        );
+
+    await collection.get().then(
+      (querySnapshot) async {
+        for (var docSnapshot in querySnapshot.docs) {
+          await updateSeenChats(docSnapshot.data()["id"]);
+        }
+      },
+    );
+  }
+
+  Future<void> updateSeenChats(String commentId) async {
+    await FirebaseFirestore.instance
+        .collection('appointment')
+        .doc(widget.appointmentId)
+        .collection('chat')
+        .doc(commentId)
+        .update(
+      {'isSeen': true},
+    );
+  }
+
   @override
   void initState() {
+    getNewChats();
     getAppointmentInfo();
     getDoctortInfo();
     getPatientInfo();

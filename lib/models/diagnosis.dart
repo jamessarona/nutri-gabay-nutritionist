@@ -14,6 +14,7 @@ class Diagnosis {
   final String problem;
   final String statement;
   final DateTime date;
+  final bool isSeen;
   Diagnosis({
     required this.id,
     required this.domain1,
@@ -23,6 +24,7 @@ class Diagnosis {
     required this.problem,
     required this.statement,
     required this.date,
+    required this.isSeen,
   });
 
   factory Diagnosis.fromJson(Map<String, dynamic> json) => Diagnosis(
@@ -34,6 +36,7 @@ class Diagnosis {
         problem: json["problem"],
         statement: json["statement"],
         date: json["date"].toDate(),
+        isSeen: json["isSeen"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -45,6 +48,7 @@ class Diagnosis {
         "problem": problem,
         "statement": statement,
         "date": date,
+        "isSeen": isSeen,
       };
 
   factory Diagnosis.fromFirestore(
@@ -61,6 +65,7 @@ class Diagnosis {
       problem: data?["problem"],
       statement: data?["statement"],
       date: data?["date"].toDate(),
+      isSeen: data?["isSeen"],
     );
   }
 
@@ -74,6 +79,7 @@ class Diagnosis {
       "problem": problem,
       "statement": statement,
       "date": date,
+      "isSeen": isSeen,
     };
   }
 }

@@ -62,6 +62,7 @@ class _CreateDiagnosisPageState extends State<CreateDiagnosisPage> {
       problem: _problemController.text,
       statement: _statementController.text,
       date: DateTime.now(),
+      isSeen: false,
     );
 
     final formJson = formQuestion.toJson();

@@ -164,8 +164,48 @@ class _NutritionInterventionDetailPageState
     } on FirebaseException {}
   }
 
+  Future<void> getNewComments() async {
+    final collection = FirebaseFirestore.instance
+        .collection('appointment')
+        .doc(widget.appointmentId)
+        .collection('files')
+        .doc(widget.fileId)
+        .collection('comments')
+        .where(
+          Filter.and(
+            Filter("isPatient", isEqualTo: true),
+            Filter(
+              "isSeen",
+              isEqualTo: false,
+            ),
+          ),
+        );
+
+    await collection.get().then(
+      (querySnapshot) async {
+        for (var docSnapshot in querySnapshot.docs) {
+          await updateSeenComments(docSnapshot.data()["id"]);
+        }
+      },
+    );
+  }
+
+  Future<void> updateSeenComments(String commentId) async {
+    await FirebaseFirestore.instance
+        .collection('appointment')
+        .doc(widget.appointmentId)
+        .collection('files')
+        .doc(widget.fileId)
+        .collection('comments')
+        .doc(commentId)
+        .update(
+      {'isSeen': true},
+    );
+  }
+
   @override
   void initState() {
+    getNewComments();
     getDoctorInfo();
     getPatientInfo();
     super.initState();

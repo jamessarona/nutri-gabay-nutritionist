@@ -451,8 +451,8 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
         .doc(fileId)
         .collection('comments')
         .where(
-          'isPatient',
-          isEqualTo: true,
+          Filter.and(Filter("isPatient", isEqualTo: true),
+              Filter("isSeen", isEqualTo: false)),
         );
 
     await collection.get().then(
@@ -495,8 +495,10 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
     getPatientInfo();
     getPatientNutritionInfo();
 
-    const oneSec = Duration(seconds: 1);
-    Timer.periodic(oneSec, (Timer t) => getUpdates());
+    // const oneSec = Duration(seconds: 1);
+    // Timer.periodic(oneSec, (Timer t) =>
+    getUpdates();
+    // );
     super.initState();
   }
 
