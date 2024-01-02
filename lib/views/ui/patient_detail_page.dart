@@ -1,6 +1,11 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nutri_gabay_nutritionist/models/assessment.dart';
+import 'package:nutri_gabay_nutritionist/models/comment.dart';
+import 'package:nutri_gabay_nutritionist/models/diagnosis.dart';
+import 'package:nutri_gabay_nutritionist/models/form.dart';
 import 'package:nutri_gabay_nutritionist/models/message_controller.dart';
 import 'package:nutri_gabay_nutritionist/models/patient.dart';
 import 'package:nutri_gabay_nutritionist/models/patient_nutrition.dart';
@@ -40,6 +45,9 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
 
   int chatCount = 0;
   int assessmentCount = 0;
+  int diagnosisCount = 0;
+  int interventionCount = 0;
+  int monitoringCount = 0;
 
   void getPatientInfo() async {
     final ref = FirebaseFirestore.instance
@@ -191,76 +199,127 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
                 ),
               ),
               const SizedBox(width: 10),
-              PatientActionsContainer(
-                title: 'Nutrition Diagnosis',
-                icon: 'diagnosis',
-                iconData: Icons.phone,
-                color: const Color.fromARGB(255, 253, 195, 10),
-                isSmall: true,
-                onTap: () {
-                  Navigator.of(context)
-                      .push(
-                    MaterialPageRoute(
-                      builder: (ctx) => NutritionDiagnosisPage(
-                        appointmentId: widget.appointmentId,
-                        doctorId: widget.doctorId,
-                        patientId: widget.patientId,
-                        patientNutritionalId: widget.patientNutritionalId,
+              badges.Badge(
+                badgeContent: Container(
+                  margin: const EdgeInsets.all(5),
+                  child: Text(
+                    diagnosisCount == 0 ? "!" : "",
+                    style: appstyle(25, Colors.black, FontWeight.bold),
+                  ),
+                ),
+                badgeStyle: const badges.BadgeStyle(
+                  borderSide: BorderSide(
+                    color: Colors.black,
+                    width: 2,
+                  ),
+                ),
+                showBadge: diagnosisCount == 0,
+                position: badges.BadgePosition.topEnd(top: -3, end: 0),
+                child: PatientActionsContainer(
+                  title: 'Nutrition Diagnosis',
+                  icon: 'diagnosis',
+                  iconData: Icons.phone,
+                  color: const Color.fromARGB(255, 253, 195, 10),
+                  isSmall: true,
+                  onTap: () {
+                    Navigator.of(context)
+                        .push(
+                      MaterialPageRoute(
+                        builder: (ctx) => NutritionDiagnosisPage(
+                          appointmentId: widget.appointmentId,
+                          doctorId: widget.doctorId,
+                          patientId: widget.patientId,
+                          patientNutritionalId: widget.patientNutritionalId,
+                        ),
                       ),
-                    ),
-                  )
-                      .whenComplete(() async {
-                    await getUpdates();
-                  });
-                },
+                    )
+                        .whenComplete(() async {
+                      await getUpdates();
+                    });
+                  },
+                ),
               ),
               const SizedBox(width: 10),
-              PatientActionsContainer(
-                title: 'Nutrition\nIntervention',
-                icon: 'nutri-intervention',
-                iconData: Icons.phone,
-                color: customColor,
-                isSmall: true,
-                onTap: () {
-                  Navigator.of(context)
-                      .push(
-                    MaterialPageRoute(
-                      builder: (ctx) => NutritionInterventionPage(
-                        appointmentId: widget.appointmentId,
-                        patientNutritionalId: widget.patientNutritionalId,
-                        doctorId: widget.doctorId,
-                        patientId: widget.patientId,
+              badges.Badge(
+                badgeContent: Container(
+                  margin: const EdgeInsets.all(5),
+                  child: Text(
+                    interventionCount > 9 ? "9+" : interventionCount.toString(),
+                    style: appstyle(20, Colors.black, FontWeight.bold),
+                  ),
+                ),
+                badgeStyle: const badges.BadgeStyle(
+                  borderSide: BorderSide(
+                    color: Colors.black,
+                    width: 2,
+                  ),
+                ),
+                showBadge: interventionCount > 0,
+                position: badges.BadgePosition.topEnd(top: -3, end: 0),
+                child: PatientActionsContainer(
+                  title: 'Nutrition\nIntervention',
+                  icon: 'nutri-intervention',
+                  iconData: Icons.phone,
+                  color: customColor,
+                  isSmall: true,
+                  onTap: () {
+                    Navigator.of(context)
+                        .push(
+                      MaterialPageRoute(
+                        builder: (ctx) => NutritionInterventionPage(
+                          appointmentId: widget.appointmentId,
+                          patientNutritionalId: widget.patientNutritionalId,
+                          doctorId: widget.doctorId,
+                          patientId: widget.patientId,
+                        ),
                       ),
-                    ),
-                  )
-                      .whenComplete(() async {
-                    await getUpdates();
-                  });
-                },
+                    )
+                        .whenComplete(() async {
+                      await getUpdates();
+                    });
+                  },
+                ),
               ),
               const SizedBox(width: 10),
-              PatientActionsContainer(
-                title: 'Monitoring and \nEvaluation',
-                icon: 'monitoring-evaluation',
-                iconData: Icons.phone,
-                color: const Color.fromARGB(255, 252, 67, 66),
-                isSmall: true,
-                onTap: () {
-                  Navigator.of(context)
-                      .push(
-                    MaterialPageRoute(
-                      builder: (ctx) => MonitoringEvaluationPage(
-                        appointmentId: widget.appointmentId,
-                        doctorId: widget.doctorId,
-                        patientId: widget.patientId,
-                        patientNutritionalId: widget.patientNutritionalId,
+              badges.Badge(
+                badgeContent: Container(
+                  margin: const EdgeInsets.all(5),
+                  child: Text(
+                    monitoringCount > 9 ? "9+" : monitoringCount.toString(),
+                    style: appstyle(20, Colors.black, FontWeight.bold),
+                  ),
+                ),
+                badgeStyle: const badges.BadgeStyle(
+                  borderSide: BorderSide(
+                    color: Colors.black,
+                    width: 2,
+                  ),
+                ),
+                showBadge: monitoringCount > 0,
+                position: badges.BadgePosition.topEnd(top: -3, end: 0),
+                child: PatientActionsContainer(
+                  title: 'Monitoring and \nEvaluation',
+                  icon: 'monitoring-evaluation',
+                  iconData: Icons.phone,
+                  color: const Color.fromARGB(255, 252, 67, 66),
+                  isSmall: true,
+                  onTap: () {
+                    Navigator.of(context)
+                        .push(
+                      MaterialPageRoute(
+                        builder: (ctx) => MonitoringEvaluationPage(
+                          appointmentId: widget.appointmentId,
+                          doctorId: widget.doctorId,
+                          patientId: widget.patientId,
+                          patientNutritionalId: widget.patientNutritionalId,
+                        ),
                       ),
-                    ),
-                  )
-                      .whenComplete(() async {
-                    await getUpdates();
-                  });
-                },
+                    )
+                        .whenComplete(() async {
+                      await getUpdates();
+                    });
+                  },
+                ),
               ),
               const SizedBox(width: 10),
             ],
@@ -352,9 +411,83 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
     );
   }
 
+  Future<void> getNewDiagnosisCount() async {
+    final collection = FirebaseFirestore.instance
+        .collection('appointment')
+        .doc(widget.appointmentId)
+        .collection('diagnosis')
+        .withConverter(
+          fromFirestore: Diagnosis.fromFirestore,
+          toFirestore: (Diagnosis diagnosis, _) => diagnosis.toFirestore(),
+        );
+
+    await collection.get().then(
+      (querySnapshot) {
+        diagnosisCount = querySnapshot.docs.length;
+      },
+    );
+  }
+
+  Future<void> getNewInterventionCount() async {
+    interventionCount = 0;
+    final collection = FirebaseFirestore.instance
+        .collection('appointment')
+        .doc(widget.appointmentId)
+        .collection('files');
+
+    await collection.get().then(
+      (querySnapshot) async {
+        for (var docSnapshot in querySnapshot.docs) {
+          await getNewInterventionCommentCount(docSnapshot.data()["id"]);
+        }
+      },
+    );
+  }
+
+  Future<void> getNewInterventionCommentCount(String fileId) async {
+    final collection = FirebaseFirestore.instance
+        .collection('appointment')
+        .doc(widget.appointmentId)
+        .collection('files')
+        .doc(fileId)
+        .collection('comments')
+        .where(
+          'isPatient',
+          isEqualTo: true,
+        );
+
+    await collection.get().then(
+      (querySnapshot) {
+        interventionCount += querySnapshot.docs.length;
+      },
+    );
+  }
+
+  Future<void> getNewMonitoringCount() async {
+    final collection = FirebaseFirestore.instance
+        .collection('appointment')
+        .doc(widget.appointmentId)
+        .collection('form')
+        .where("answered", isEqualTo: true)
+        .withConverter(
+          fromFirestore: FormQuestion.fromFirestore,
+          toFirestore: (FormQuestion fq, _) => fq.toFirestore(),
+        );
+
+    await collection.get().then(
+      (querySnapshot) {
+        monitoringCount = querySnapshot.docs.length;
+      },
+    );
+  }
+
   Future<void> getUpdates() async {
     await getNewChatCount();
     await getNewAssessmentCount();
+    await getNewDiagnosisCount();
+    await getNewInterventionCount();
+    await getNewMonitoringCount();
+
     setState(() {});
   }
 
@@ -362,7 +495,9 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
   void initState() {
     getPatientInfo();
     getPatientNutritionInfo();
-    getUpdates();
+
+    const oneSec = Duration(seconds: 1);
+    Timer.periodic(oneSec, (Timer t) => getUpdates());
     super.initState();
   }
 
