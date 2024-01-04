@@ -94,6 +94,7 @@ class _NutritionInterventionDetailPageState
       isPatient: false,
       text: _commentController.text,
       date: DateTime.now(),
+      isSeen: false,
     );
 
     final formJson = comment.toJson();
@@ -220,7 +221,7 @@ class _NutritionInterventionDetailPageState
         appBar: AppBar(
           backgroundColor: customColor[70],
           title: Text(
-            "File",
+            "Nutrition Intervention",
             style: appstyle(
               25,
               Colors.black,

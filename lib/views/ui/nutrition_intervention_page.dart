@@ -340,6 +340,7 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
         'type': fileMime,
         'date': now.toString(),
         'url': '',
+        'isSeen': false,
       }).whenComplete(() async {
         await saveToStorage(document.id);
       });
@@ -465,7 +466,7 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
         appBar: AppBar(
           backgroundColor: customColor[70],
           title: Text(
-            "Files",
+            "Nutrition Intervention",
             style: appstyle(
               25,
               Colors.black,

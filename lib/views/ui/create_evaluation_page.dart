@@ -53,10 +53,11 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
           .doc();
 
       FormQuestion formQuestion = FormQuestion(
-        uid: docForm.id,
+        id: docForm.id,
         name: _formController.text,
         date: DateTime.now(),
         answered: false,
+        isSeen: false,
       );
 
       final formJson = formQuestion.toJson();
@@ -66,12 +67,12 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
             .collection('appointment')
             .doc(widget.appointmentId)
             .collection('form')
-            .doc(formQuestion.uid)
+            .doc(formQuestion.id)
             .collection('questions')
             .doc();
         Question questions = Question(
           uid: docForm.id,
-          formId: formQuestion.uid,
+          formId: formQuestion.id,
           number: i + 1,
           question: _questionController[i].text,
           type: _typeController[i].text,

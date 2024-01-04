@@ -5,7 +5,6 @@ import 'package:nutri_gabay_nutritionist/models/patient.dart';
 import 'package:nutri_gabay_nutritionist/services/baseauth.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/custom_patient_tile.dart';
-import 'package:nutri_gabay_nutritionist/views/shared/custom_text_fields.dart';
 
 class PatientListPage extends StatefulWidget {
   const PatientListPage({super.key});
@@ -18,7 +17,7 @@ class _PatientListPageState extends State<PatientListPage> {
   late Size screenSize;
   String uid = '';
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _search = TextEditingController();
+  // final TextEditingController _search = TextEditingController();
 
   List<QueryDocumentSnapshot<Patient>>? patients;
 
@@ -107,32 +106,32 @@ class _PatientListPageState extends State<PatientListPage> {
                 child: ListView(
                   children: [
                     const SizedBox(height: 20),
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                          horizontal: screenSize.width * 0.01),
-                      height: 40,
-                      width: double.infinity,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          SizedBox(
-                            width: 200,
-                            child: SearchTextField(
-                              controller: _search,
-                              hintText: 'Search patient...',
-                              isObscure: false,
-                              keyboardType: TextInputType.text,
-                              maxLines: 1,
-                              isEditable: true,
-                              onChanged: (value) {
-                                setState(() {});
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 15),
+                    // Container(
+                    //   margin: EdgeInsets.symmetric(
+                    //       horizontal: screenSize.width * 0.01),
+                    //   height: 40,
+                    //   width: double.infinity,
+                    //   child: Row(
+                    //     mainAxisAlignment: MainAxisAlignment.end,
+                    //     children: [
+                    //       SizedBox(
+                    //         width: 200,
+                    //         child: SearchTextField(
+                    //           controller: _search,
+                    //           hintText: 'Search patient...',
+                    //           isObscure: false,
+                    //           keyboardType: TextInputType.text,
+                    //           maxLines: 1,
+                    //           isEditable: true,
+                    //           onChanged: (value) {
+                    //             setState(() {});
+                    //           },
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 15),
                     Container(
                       margin: EdgeInsets.symmetric(
                           horizontal: screenSize.width * 0.01),

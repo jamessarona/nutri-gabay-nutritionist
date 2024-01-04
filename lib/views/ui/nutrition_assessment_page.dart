@@ -25,6 +25,43 @@ class NutritionAssessmentPage extends StatefulWidget {
 
 class _NutritionAssessmentPageState extends State<NutritionAssessmentPage> {
   late Size screenSize;
+
+  Future<void> getNewAssessment() async {
+    final collection = FirebaseFirestore.instance
+        .collection('appointment')
+        .doc(widget.appointmentId)
+        .collection('assessment')
+        .where(
+          "isSeen",
+          isEqualTo: false,
+        );
+
+    await collection.get().then(
+      (querySnapshot) async {
+        for (var docSnapshot in querySnapshot.docs) {
+          await updateSeenAssessments(docSnapshot.data()["id"]);
+        }
+      },
+    );
+  }
+
+  Future<void> updateSeenAssessments(String assessmentId) async {
+    await FirebaseFirestore.instance
+        .collection('appointment')
+        .doc(widget.appointmentId)
+        .collection('assessment')
+        .doc(assessmentId)
+        .update(
+      {'isSeen': true},
+    );
+  }
+
+  @override
+  void initState() {
+    getNewAssessment();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     screenSize = MediaQuery.of(context).size;

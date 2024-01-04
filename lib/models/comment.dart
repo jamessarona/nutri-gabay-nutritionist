@@ -11,11 +11,13 @@ class Comment {
   final bool isPatient;
   final String text;
   final DateTime date;
+  final bool isSeen;
   Comment({
     required this.id,
     required this.isPatient,
     required this.text,
     required this.date,
+    required this.isSeen,
   });
 
   factory Comment.fromJson(Map<String, dynamic> json) => Comment(
@@ -23,6 +25,7 @@ class Comment {
         isPatient: json["isPatient"],
         text: json["text"],
         date: json["date"].toDate(),
+        isSeen: json["isSeen"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -30,6 +33,7 @@ class Comment {
         "isPatient": isPatient,
         "text": text,
         "date": date,
+        "isSeen": isSeen,
       };
 
   factory Comment.fromFirestore(
@@ -42,6 +46,7 @@ class Comment {
       isPatient: data?["isPatient"],
       text: data?["text"],
       date: data?["date"].toDate(),
+      isSeen: data?["isSeen"],
     );
   }
 
@@ -51,6 +56,7 @@ class Comment {
       "isPatient": isPatient,
       "text": text,
       "date": date,
+      "isSeen": isSeen,
     };
   }
 }

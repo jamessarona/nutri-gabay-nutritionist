@@ -147,7 +147,7 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(
                     width: 400,
                     child: Text(
-                      "Username",
+                      "Email",
                       style: appstyle(
                         12,
                         Colors.black,

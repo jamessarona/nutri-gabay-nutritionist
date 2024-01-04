@@ -18,6 +18,43 @@ class ViewEvaluationPage extends StatefulWidget {
 
 class _ViewEvaluationPageState extends State<ViewEvaluationPage> {
   late Size screenSize;
+
+  Future<void> getNewEvaluation() async {
+    final collection = FirebaseFirestore.instance
+        .collection('appointment')
+        .doc(widget.appointmentId)
+        .collection('form')
+        .where(
+          "isSeen",
+          isEqualTo: false,
+        );
+
+    await collection.get().then(
+      (querySnapshot) async {
+        for (var docSnapshot in querySnapshot.docs) {
+          await updateSeenEvaluations(docSnapshot.data()["id"]);
+        }
+      },
+    );
+  }
+
+  Future<void> updateSeenEvaluations(String evaluationId) async {
+    await FirebaseFirestore.instance
+        .collection('appointment')
+        .doc(widget.appointmentId)
+        .collection('form')
+        .doc(evaluationId)
+        .update(
+      {'isSeen': true},
+    );
+  }
+
+  @override
+  void initState() {
+    getNewEvaluation();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     screenSize = MediaQuery.of(context).size;
@@ -86,7 +123,7 @@ class _ViewEvaluationPageState extends State<ViewEvaluationPage> {
                                   builder: (context) =>
                                       ViewEvaluationQuestionPage(
                                     appointmentId: widget.appointmentId,
-                                    formId: data['uid'],
+                                    formId: data['id'],
                                     formName: data['name'],
                                   ),
                                 ),

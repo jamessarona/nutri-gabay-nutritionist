@@ -7,28 +7,33 @@ FormQuestion formQuestionsFromJson(String str) =>
 String formQuestionsToJson(FormQuestion data) => json.encode(data.toJson());
 
 class FormQuestion {
-  final String uid;
+  final String id;
   final String name;
   final DateTime date;
   final bool answered;
-  FormQuestion(
-      {required this.uid,
-      required this.name,
-      required this.date,
-      required this.answered});
+  final bool isSeen;
+  FormQuestion({
+    required this.id,
+    required this.name,
+    required this.date,
+    required this.answered,
+    required this.isSeen,
+  });
 
   factory FormQuestion.fromJson(Map<String, dynamic> json) => FormQuestion(
-        uid: json["uid"],
+        id: json["id"],
         name: json["name"],
         date: json["date"].toDate(),
         answered: json["answered"],
+        isSeen: json["isSeen"],
       );
 
   Map<String, dynamic> toJson() => {
-        "uid": uid,
+        "id": id,
         "name": name,
         "date": date,
         "answered": answered,
+        "isSeen": isSeen,
       };
 
   factory FormQuestion.fromFirestore(
@@ -37,19 +42,21 @@ class FormQuestion {
   ) {
     final data = snapshot.data();
     return FormQuestion(
-      uid: data?["uid"],
+      id: data?["id"],
       name: data?["name"],
       date: data?["date"].toDate(),
       answered: data?["answered"],
+      isSeen: data?["isSeen"],
     );
   }
 
   Map<String, dynamic> toFirestore() {
     return {
-      "uid": uid,
+      "id": id,
       "name": name,
       "date": date,
       "answered": answered,
+      "isSeen": isSeen,
     };
   }
 }

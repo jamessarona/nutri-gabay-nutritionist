@@ -77,7 +77,7 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
   List<Widget> buildBmiInfo() {
     return [
       Text(
-        'BMI and Recommended Caloric Intake',
+        'BMI and measurements',
         style: appstyle(18, Colors.black, FontWeight.bold)
             .copyWith(color: customColor[10]),
       ),
@@ -398,6 +398,10 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
         .collection('appointment')
         .doc(widget.appointmentId)
         .collection('assessment')
+        .where(
+          "isSeen",
+          isEqualTo: false,
+        )
         .withConverter(
           fromFirestore: Assessment.fromFirestore,
           toFirestore: (Assessment assessment, _) => assessment.toFirestore(),
@@ -467,7 +471,10 @@ class _PatientDetailPageState extends State<PatientDetailPage> {
         .collection('appointment')
         .doc(widget.appointmentId)
         .collection('form')
-        .where("answered", isEqualTo: true)
+        .where(
+          Filter.and(Filter("answered", isEqualTo: true),
+              Filter("isSeen", isEqualTo: false)),
+        )
         .withConverter(
           fromFirestore: FormQuestion.fromFirestore,
           toFirestore: (FormQuestion fq, _) => fq.toFirestore(),
