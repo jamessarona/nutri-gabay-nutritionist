@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:nutri_gabay_nutritionist/models/appointment.dart';
 import 'package:nutri_gabay_nutritionist/services/baseauth.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 import 'package:nutri_gabay_nutritionist/views/ui/appointment_page.dart';
@@ -24,6 +25,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   SideMenuController sideMenu = SideMenuController();
 
   bool isHideNavBar = false;
+  int appointmentCount = 0;
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -61,6 +63,31 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
       "isOnline": isOnline,
       "lastActive": DateTime.now(),
     });
+  }
+
+  Future<void> getPendingAppointments() async {
+    appointmentCount = 0;
+    String uid = await widget.auth.currentUser();
+    if (uid != '') {
+      final docRef = FirebaseFirestore.instance
+          .collection("appointment")
+          .where(
+            Filter.and(Filter("status", isEqualTo: "Pending"),
+                Filter("doctorId", isEqualTo: uid)),
+          )
+          .withConverter(
+            fromFirestore: Appointments.fromFirestore,
+            toFirestore: (Appointments ptn, _) => ptn.toFirestore(),
+          );
+      await docRef.get().then(
+        (querySnapshot) {
+          if (querySnapshot.docs.isNotEmpty) {
+            appointmentCount = querySnapshot.docs.length;
+          }
+        },
+      );
+    }
+    setState(() {});
   }
 
   @override
@@ -111,7 +138,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                       MaterialPageRoute(
                         builder: (context) => const SettingPage(),
                       ),
-                    );
+                    ).whenComplete(() async {
+                      await getPendingAppointments();
+                    });
                   },
                   icon: const Icon(Icons.settings),
                 ),
@@ -131,24 +160,34 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
             items: [
               SideMenuItem(
                 title: 'My Profile',
-                onTap: (index, _) {
+                onTap: (index, _) async {
+                  await getPendingAppointments();
                   sideMenu.changePage(index);
                 },
                 icon: const Icon(FontAwesomeIcons.user),
               ),
               SideMenuItem(
                 title: 'Patients',
-                onTap: (index, _) {
+                onTap: (index, _) async {
+                  await getPendingAppointments();
                   sideMenu.changePage(index);
                 },
                 icon: const Icon(FontAwesomeIcons.clipboard),
               ),
               SideMenuItem(
                 title: 'Appointment Request',
-                onTap: (index, _) {
+                onTap: (index, _) async {
+                  await getPendingAppointments();
                   sideMenu.changePage(index);
                 },
                 icon: const Icon(FontAwesomeIcons.calendarDays),
+                badgeContent: appointmentCount != 0
+                    ? Text(
+                        appointmentCount > 9
+                            ? "9+"
+                            : appointmentCount.toString(),
+                      )
+                    : null,
               ),
             ],
           ),

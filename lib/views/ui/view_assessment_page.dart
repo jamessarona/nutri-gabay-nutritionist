@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nutri_gabay_nutritionist/models/assessment.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
+import 'package:nutri_gabay_nutritionist/views/shared/custom_buttons.dart';
 
 class ViewAssessmentPage extends StatefulWidget {
   final String appointmentId;
@@ -19,6 +20,11 @@ class ViewAssessmentPage extends StatefulWidget {
 
 class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
   late Size screenSize;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _findingsController = TextEditingController();
+  final TextEditingController _standardsController = TextEditingController();
+
+  bool isEdited = false;
 
   Assessment? assessment;
   Future<void> getAssessment() async {
@@ -33,8 +39,37 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
         );
     final docSnap = await ref.get();
     assessment = docSnap.data()!;
-
+    _findingsController.text = assessment!.findings;
+    _standardsController.text = assessment!.standards;
+    isEdited = false;
     setState(() {});
+  }
+
+  Future<void> saveAssessment() async {
+    await FirebaseFirestore.instance
+        .collection("appointment")
+        .doc(widget.appointmentId)
+        .collection('assessment')
+        .doc(widget.assessmentId)
+        .update({
+      'findings': _findingsController.text,
+      "standards": _standardsController.text,
+    });
+
+    await getAssessment().whenComplete(() {
+      final snackBar = SnackBar(
+        content: Text(
+          'Assessment has been saved',
+          style: appstyle(12, Colors.white, FontWeight.normal),
+        ),
+        action: SnackBarAction(
+          label: 'Close',
+          onPressed: () {},
+        ),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
   }
 
   @override
@@ -53,74 +88,77 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
             elevation: 5,
             child: Padding(
               padding: const EdgeInsets.all(10),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Client History (CH)',
-                    style: appstyle(
-                      20,
-                      Colors.black,
-                      FontWeight.bold,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Client History (CH)',
+                      style: appstyle(
+                        20,
+                        Colors.black,
+                        FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Patient/client or family nutrition‐oriented medical/health history:',
-                    style: appstyle(
-                      15,
-                      Colors.black,
-                      FontWeight.w600,
+                    const SizedBox(height: 20),
+                    Text(
+                      'Patient/client or family nutrition‐oriented medical/health history:',
+                      style: appstyle(
+                        15,
+                        Colors.black,
+                        FontWeight.w600,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    assessment!.history,
-                    style: appstyle(
-                      14,
-                      Colors.black,
-                      FontWeight.normal,
+                    const SizedBox(height: 5),
+                    Text(
+                      assessment!.history,
+                      style: appstyle(
+                        14,
+                        Colors.black,
+                        FontWeight.normal,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 30),
-                  Text(
-                    'Living/housing situation:',
-                    style: appstyle(
-                      15,
-                      Colors.black,
-                      FontWeight.w600,
+                    const SizedBox(height: 30),
+                    Text(
+                      'Living/housing situation:',
+                      style: appstyle(
+                        15,
+                        Colors.black,
+                        FontWeight.w600,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    assessment!.situation,
-                    style: appstyle(
-                      14,
-                      Colors.black,
-                      FontWeight.normal,
+                    const SizedBox(height: 5),
+                    Text(
+                      assessment!.situation,
+                      style: appstyle(
+                        14,
+                        Colors.black,
+                        FontWeight.normal,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 30),
-                  Text(
-                    'Occupation:',
-                    style: appstyle(
-                      15,
-                      Colors.black,
-                      FontWeight.w600,
+                    const SizedBox(height: 30),
+                    Text(
+                      'Occupation:',
+                      style: appstyle(
+                        15,
+                        Colors.black,
+                        FontWeight.w600,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    assessment!.occupation,
-                    style: appstyle(
-                      14,
-                      Colors.black,
-                      FontWeight.bold,
+                    const SizedBox(height: 5),
+                    Text(
+                      assessment!.occupation,
+                      style: appstyle(
+                        14,
+                        Colors.black,
+                        FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 30),
-                ],
+                    const SizedBox(height: 30),
+                  ],
+                ),
               ),
             ),
           ),
@@ -146,15 +184,35 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Text(
-                    assessment!.findings,
-                    style: appstyle(
-                      14,
-                      Colors.black,
-                      FontWeight.normal,
+                  TextFormField(
+                    controller: _findingsController,
+                    keyboardType: TextInputType.multiline,
+                    validator: (value) {
+                      if (value == '') {
+                        return 'This field is required';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      isEdited = true;
+                      setState(() {});
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(color: customColor),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white70,
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 10.0),
                     ),
+                    maxLines: 8,
                   ),
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
@@ -181,15 +239,35 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Text(
-                    assessment!.standards,
-                    style: appstyle(
-                      14,
-                      Colors.black,
-                      FontWeight.normal,
+                  TextFormField(
+                    controller: _standardsController,
+                    keyboardType: TextInputType.multiline,
+                    validator: (value) {
+                      if (value == '') {
+                        return 'This field is required';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      isEdited = true;
+                      setState(() {});
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(color: customColor),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white70,
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 10.0),
                     ),
+                    maxLines: 8,
                   ),
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
@@ -416,7 +494,20 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
               ),
             ),
           ],
-        )
+        ),
+        const SizedBox(height: 40),
+        isEdited
+            ? SizedBox(
+                child: CustomButton(
+                  onPress: () async {
+                    await saveAssessment();
+                  },
+                  label: 'Save',
+                  labelSize: 15,
+                  radius: 5,
+                ),
+              )
+            : Container()
       ],
     );
   }

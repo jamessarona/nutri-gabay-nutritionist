@@ -503,7 +503,7 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
                                   style: appstyle(
                                       18, customColor, FontWeight.bold)),
                               TextSpan(
-                                  text: 'FILES ',
+                                  text: 'FILES: (PNG or PDF)',
                                   style: appstyle(
                                       18, Colors.black, FontWeight.bold)),
                             ],
