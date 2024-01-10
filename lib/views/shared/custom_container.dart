@@ -71,11 +71,13 @@ class PatientActionsContainer extends StatelessWidget {
 class DiagnosisDomainContainer extends StatelessWidget {
   final TextEditingController controller;
   final FormFieldValidator<String>? validation;
+  final void Function(String)? onChanged;
   final bool isEdit;
   const DiagnosisDomainContainer({
     super.key,
     required this.controller,
     this.validation,
+    this.onChanged,
     required this.isEdit,
   });
 
@@ -104,6 +106,7 @@ class DiagnosisDomainContainer extends StatelessWidget {
             FontWeight.normal,
           ),
         ),
+        onChanged: onChanged,
         style: appstyle(
           17,
           Colors.black,

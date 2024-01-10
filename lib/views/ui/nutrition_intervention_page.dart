@@ -195,6 +195,10 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
                               fileDate: formatDate(data['date']),
                               fileSize: data['size'],
                               fileUrl: data['url'],
+                              domain1: data['domain1'],
+                              domain2: data['domain2'],
+                              domain3: data['domain3'],
+                              domain4: data['domain4'],
                             ),
                           ),
                         );
@@ -341,6 +345,10 @@ class _NutritionInterventionPageState extends State<NutritionInterventionPage> {
         'date': now.toString(),
         'url': '',
         'isSeen': false,
+        "domain1": '',
+        "domain2": '',
+        "domain3": '',
+        "domain4": '',
       }).whenComplete(() async {
         await saveToStorage(document.id);
       });

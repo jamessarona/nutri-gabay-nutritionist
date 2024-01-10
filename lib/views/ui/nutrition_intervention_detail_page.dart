@@ -5,6 +5,7 @@ import 'package:nutri_gabay_nutritionist/models/comment.dart';
 import 'package:nutri_gabay_nutritionist/models/doctor.dart';
 import 'package:nutri_gabay_nutritionist/models/patient.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
+import 'package:nutri_gabay_nutritionist/views/shared/custom_container.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -19,6 +20,10 @@ class NutritionInterventionDetailPage extends StatefulWidget {
   final String fileDate;
   final double fileSize;
   final String fileUrl;
+  final String domain1;
+  final String domain2;
+  final String domain3;
+  final String domain4;
   const NutritionInterventionDetailPage({
     super.key,
     required this.appointmentId,
@@ -31,6 +36,10 @@ class NutritionInterventionDetailPage extends StatefulWidget {
     required this.fileDate,
     required this.fileSize,
     required this.fileUrl,
+    required this.domain1,
+    required this.domain2,
+    required this.domain3,
+    required this.domain4,
   });
 
   @override
@@ -42,7 +51,13 @@ class _NutritionInterventionDetailPageState
     extends State<NutritionInterventionDetailPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _commentController = TextEditingController();
+  final TextEditingController _domain1Controller = TextEditingController();
+  final TextEditingController _domain2Controller = TextEditingController();
+  final TextEditingController _domain3Controller = TextEditingController();
+  final TextEditingController _domain4Controller = TextEditingController();
   late Size screenSize;
+
+  bool isDomainEdited = false;
 
   Patient? patient;
   Doctor? doctor;
@@ -99,6 +114,20 @@ class _NutritionInterventionDetailPageState
 
     final formJson = comment.toJson();
     await docComment.set(formJson);
+  }
+
+  Future<void> saveDomain() async {
+    await FirebaseFirestore.instance
+        .collection('appointment')
+        .doc(widget.appointmentId)
+        .collection('files')
+        .doc(widget.fileId)
+        .update({
+      "domain1": _domain1Controller.text,
+      "domain2": _domain2Controller.text,
+      "domain3": _domain3Controller.text,
+      "domain4": _domain4Controller.text,
+    });
   }
 
   showAlertDialog(BuildContext context, String fileId) {
@@ -206,6 +235,10 @@ class _NutritionInterventionDetailPageState
 
   @override
   void initState() {
+    _domain1Controller.text = widget.domain1;
+    _domain2Controller.text = widget.domain2;
+    _domain3Controller.text = widget.domain3;
+    _domain4Controller.text = widget.domain4;
     getNewComments();
     getDoctorInfo();
     getPatientInfo();
@@ -228,6 +261,26 @@ class _NutritionInterventionDetailPageState
               FontWeight.bold,
             ),
           ),
+          actions: [
+            isDomainEdited
+                ? Container(
+                    margin: const EdgeInsets.only(right: 10),
+                    child: IconButton(
+                      onPressed: () async {
+                        await saveDomain().whenComplete(() {
+                          setState(() {
+                            isDomainEdited = false;
+                          });
+                        });
+                      },
+                      icon: const Icon(
+                        Icons.save,
+                        color: customColor,
+                      ),
+                    ),
+                  )
+                : Container(),
+          ],
         ),
         body: SizedBox(
           height: double.infinity,
@@ -328,10 +381,71 @@ class _NutritionInterventionDetailPageState
                             ),
                           ),
                           const SizedBox(height: 20),
+                          SizedBox(
+                            width: double.infinity,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                DiagnosisDomainContainer(
+                                  controller: _domain1Controller,
+                                  validation: (value) {
+                                    return null;
+                                  },
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isDomainEdited = true;
+                                    });
+                                  },
+                                  isEdit: true,
+                                ),
+                                const SizedBox(width: 15),
+                                DiagnosisDomainContainer(
+                                  controller: _domain2Controller,
+                                  validation: (value) {
+                                    return null;
+                                  },
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isDomainEdited = true;
+                                    });
+                                  },
+                                  isEdit: true,
+                                ),
+                                const SizedBox(width: 15),
+                                DiagnosisDomainContainer(
+                                  controller: _domain3Controller,
+                                  validation: (value) {
+                                    return null;
+                                  },
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isDomainEdited = true;
+                                    });
+                                  },
+                                  isEdit: true,
+                                ),
+                                const SizedBox(width: 15),
+                                DiagnosisDomainContainer(
+                                  controller: _domain4Controller,
+                                  validation: (value) {
+                                    return null;
+                                  },
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isDomainEdited = true;
+                                    });
+                                  },
+                                  isEdit: true,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 20),
                           Container(
                             margin: const EdgeInsets.symmetric(horizontal: 10),
                             child: Text(
-                              'Comments',
+                              'Nutrition Intervention Plan and Nutrition Prescriptions:',
                               style:
                                   appstyle(13, Colors.black, FontWeight.normal),
                             ),
@@ -457,7 +571,7 @@ class _NutritionInterventionDetailPageState
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Add a Comment:',
+                                  'Add a Nutrition Intervention Plan and Nutrition Prescriptions:',
                                   style: appstyle(
                                       13, Colors.black, FontWeight.normal),
                                 ),

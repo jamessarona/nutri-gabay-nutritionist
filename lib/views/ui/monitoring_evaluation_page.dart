@@ -27,7 +27,7 @@ class _MonitoringEvaluationPageState extends State<MonitoringEvaluationPage> {
   List<Widget> buildFormWidger(BuildContext context) {
     return [
       PatientActionsContainer(
-        title: 'Create a form',
+        title: 'Create MNE',
         icon: 'add-form',
         iconData: Icons.phone,
         color: const Color.fromARGB(255, 253, 195, 10),
@@ -44,7 +44,7 @@ class _MonitoringEvaluationPageState extends State<MonitoringEvaluationPage> {
       ),
       const SizedBox(width: 50, height: 50),
       PatientActionsContainer(
-        title: 'Forms',
+        title: 'List of MNE',
         icon: 'forms',
         iconData: Icons.phone,
         color: const Color.fromARGB(255, 252, 67, 66),
@@ -72,7 +72,7 @@ class _MonitoringEvaluationPageState extends State<MonitoringEvaluationPage> {
         child: AppBar(
           backgroundColor: customColor[70],
           title: Text(
-            "Monitoring",
+            "Monitoring and Evaluation",
             style: appstyle(
               25,
               Colors.black,

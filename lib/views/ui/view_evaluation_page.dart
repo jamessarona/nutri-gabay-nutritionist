@@ -65,7 +65,7 @@ class _ViewEvaluationPageState extends State<ViewEvaluationPage> {
         child: AppBar(
           backgroundColor: customColor[70],
           title: Text(
-            "Forms",
+            "List of MNE",
             style: appstyle(
               25,
               Colors.black,

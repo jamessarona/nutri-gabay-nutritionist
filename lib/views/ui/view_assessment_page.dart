@@ -24,7 +24,7 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
   final TextEditingController _findingsController = TextEditingController();
   final TextEditingController _standardsController = TextEditingController();
 
-  bool isEdited = false;
+  bool isEditable = false;
 
   Assessment? assessment;
   Future<void> getAssessment() async {
@@ -41,7 +41,7 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
     assessment = docSnap.data()!;
     _findingsController.text = assessment!.findings;
     _standardsController.text = assessment!.standards;
-    isEdited = false;
+    isEditable = false;
     setState(() {});
   }
 
@@ -193,10 +193,7 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
                       }
                       return null;
                     },
-                    onChanged: (value) {
-                      isEdited = true;
-                      setState(() {});
-                    },
+                    enabled: isEditable,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -248,10 +245,7 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
                       }
                       return null;
                     },
-                    onChanged: (value) {
-                      isEdited = true;
-                      setState(() {});
-                    },
+                    enabled: isEditable,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -496,18 +490,45 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
           ],
         ),
         const SizedBox(height: 40),
-        isEdited
-            ? SizedBox(
-                child: CustomButton(
-                  onPress: () async {
+        Row(
+          children: [
+            isEditable
+                ? Container(
+                    margin: const EdgeInsets.only(right: 20),
+                    width: 100,
+                    child: CustomButton(
+                      onPress: () async {
+                        setState(() {
+                          _findingsController.text = assessment!.findings;
+                          _standardsController.text = assessment!.standards;
+                          isEditable = false;
+                        });
+                      },
+                      label: 'Cancel',
+                      labelSize: 15,
+                      radius: 5,
+                    ),
+                  )
+                : Container(),
+            SizedBox(
+              width: 100,
+              child: CustomButton(
+                onPress: () async {
+                  if (!isEditable) {
+                    setState(() {
+                      isEditable = true;
+                    });
+                  } else {
                     await saveAssessment();
-                  },
-                  label: 'Save',
-                  labelSize: 15,
-                  radius: 5,
-                ),
-              )
-            : Container()
+                  }
+                },
+                label: isEditable ? 'Save' : 'Edit',
+                labelSize: 15,
+                radius: 5,
+              ),
+            ),
+          ],
+        )
       ],
     );
   }
