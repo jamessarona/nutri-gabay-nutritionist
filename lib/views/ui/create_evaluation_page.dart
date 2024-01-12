@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:nutri_gabay_nutritionist/models/form.dart';
 import 'package:nutri_gabay_nutritionist/models/question.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
@@ -21,15 +22,18 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
   late Size screenSize;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _formController = TextEditingController();
-  final List<TextEditingController> _questionController = [];
-  final List<TextEditingController> _typeController = [];
+  final List<TextEditingController> _indicatorController = [];
+  final List<TextEditingController> _criteriaController = [];
+  final List<TextEditingController> _progressController = [];
+  final List<bool> isMarked = [];
+  final List<bool> isResolved = [];
 
   void saveForm() async {
     if (_formKey.currentState!.validate()) {
       await saveToFirebase().whenComplete(() {
         final snackBar = SnackBar(
           content: Text(
-            'Form has been saved',
+            'MNE has been saved',
             style: appstyle(12, Colors.white, FontWeight.normal),
           ),
           action: SnackBarAction(
@@ -45,7 +49,7 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
   }
 
   Future<void> saveToFirebase() async {
-    if (_questionController.isNotEmpty) {
+    if (_indicatorController.isNotEmpty) {
       final docForm = FirebaseFirestore.instance
           .collection('appointment')
           .doc(widget.appointmentId)
@@ -62,7 +66,7 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
 
       final formJson = formQuestion.toJson();
       await docForm.set(formJson);
-      for (int i = 0; i < _questionController.length; i++) {
+      for (int i = 0; i < _indicatorController.length; i++) {
         final docForm = FirebaseFirestore.instance
             .collection('appointment')
             .doc(widget.appointmentId)
@@ -74,10 +78,11 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
           uid: docForm.id,
           formId: formQuestion.id,
           number: i + 1,
-          question: _questionController[i].text,
-          type: _typeController[i].text,
-          required: true,
-          answer: '',
+          indicator: _indicatorController[i].text,
+          criteria: _criteriaController[i].text,
+          progress: _progressController[i].text,
+          marked: isMarked[i],
+          resolved: isResolved[i],
         );
         final questionsJson = questions.toJson();
         await docForm.set(questionsJson);
@@ -87,9 +92,11 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
 
   @override
   void initState() {
-    _questionController.add(TextEditingController());
-    _typeController.add(TextEditingController());
-    _typeController.last.text = 'Short answer text';
+    _indicatorController.add(TextEditingController());
+    _criteriaController.add(TextEditingController());
+    _progressController.add(TextEditingController());
+    isMarked.add(false);
+    isResolved.add(false);
     super.initState();
   }
 
@@ -160,9 +167,9 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
                         mainAxisSpacing: 5,
                         crossAxisSpacing: 1,
                         children:
-                            List.generate(_questionController.length, (index) {
+                            List.generate(_indicatorController.length, (index) {
                           return SizedBox(
-                            height: 200,
+                            height: 400,
                             child: Card(
                               color: Colors.white,
                               child: Column(
@@ -173,14 +180,54 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
                                     margin: const EdgeInsets.only(
                                         top: 10, left: 10, right: 10),
                                     width: double.infinity,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Indicator ${index + 1}',
+                                          style: appstyle(14, Colors.black,
+                                              FontWeight.bold),
+                                        ),
+                                        Container(
+                                          margin:
+                                              const EdgeInsets.only(right: 10),
+                                          alignment: Alignment.centerRight,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                _indicatorController
+                                                    .removeAt(index);
+                                                _criteriaController
+                                                    .removeAt(index);
+                                                _progressController
+                                                    .removeAt(index);
+                                                isMarked.removeAt(index);
+                                                isResolved.removeAt(index);
+                                              });
+                                            },
+                                            child: const Icon(
+                                              FontAwesomeIcons.xmark,
+                                              size: 30,
+                                              color: Colors.black54,
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                        top: 5, left: 10, right: 10),
+                                    width: double.infinity,
                                     child: TextFormField(
-                                      controller: _questionController[index],
+                                      controller: _indicatorController[index],
                                       keyboardType: TextInputType.text,
                                       style: appstyle(
                                           14, Colors.black, FontWeight.normal),
                                       validator: (value) {
                                         if (value == '') {
-                                          return 'Please enter the question';
+                                          return 'Please enter the indicator';
                                         }
                                         return null;
                                       },
@@ -192,7 +239,7 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
                                           borderSide: BorderSide.none,
                                         ),
                                         filled: true,
-                                        hintText: 'Question ${index + 1}',
+                                        hintText: 'Input the indicator',
                                         hintStyle: appstyle(14, Colors.black,
                                             FontWeight.normal),
                                         fillColor: Colors.grey.shade200,
@@ -205,19 +252,27 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
                                   Container(
                                     margin: const EdgeInsets.only(
                                         top: 10, left: 10, right: 10),
+                                    child: Text(
+                                      'Criteria ${index + 1}',
+                                      style: appstyle(
+                                          14, Colors.black, FontWeight.bold),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                        top: 5, left: 10, right: 10),
                                     width: double.infinity,
                                     child: TextFormField(
-                                      controller: _typeController[index],
-                                      keyboardType: TextInputType.none,
+                                      controller: _criteriaController[index],
+                                      keyboardType: TextInputType.text,
                                       style: appstyle(
                                           14, Colors.black, FontWeight.normal),
                                       validator: (value) {
                                         if (value == '') {
-                                          return 'Select the question type';
+                                          return 'Please enter the criteria';
                                         }
                                         return null;
                                       },
-                                      readOnly: true,
                                       decoration: InputDecoration(
                                         border: const OutlineInputBorder(
                                           borderSide: BorderSide.none,
@@ -225,25 +280,8 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
                                         focusedBorder: const OutlineInputBorder(
                                           borderSide: BorderSide.none,
                                         ),
-                                        suffixIcon: PopupMenuButton<String>(
-                                          icon:
-                                              const Icon(Icons.arrow_drop_down),
-                                          onSelected: (String value) {
-                                            _typeController[index].text = value;
-                                          },
-                                          itemBuilder: (BuildContext context) {
-                                            return [
-                                              "Short answer text",
-                                              "Image"
-                                            ].map<PopupMenuItem<String>>(
-                                                (String value) {
-                                              return PopupMenuItem(
-                                                  value: value,
-                                                  child: Text(value));
-                                            }).toList();
-                                          },
-                                        ),
                                         filled: true,
+                                        hintText: 'Input the criteria',
                                         hintStyle: appstyle(14, Colors.black,
                                             FontWeight.normal),
                                         fillColor: Colors.grey.shade200,
@@ -253,25 +291,93 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
                                       ),
                                     ),
                                   ),
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                        top: 10, left: 10, right: 10),
+                                    child: Text(
+                                      'Progress Notes',
+                                      style: appstyle(
+                                          14, Colors.black, FontWeight.bold),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                        top: 10, left: 10, right: 10),
+                                    child: TextFormField(
+                                      controller: _progressController[index],
+                                      keyboardType: TextInputType.multiline,
+                                      validator: (value) {
+                                        return null;
+                                      },
+                                      enabled: true,
+                                      decoration: InputDecoration(
+                                        hintText: 'Input the progress',
+                                        hintStyle: appstyle(14, Colors.black,
+                                            FontWeight.normal),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                          borderSide: const BorderSide(
+                                              color: customColor),
+                                        ),
+                                        filled: true,
+                                        fillColor: Colors.white70,
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 10.0,
+                                                horizontal: 10.0),
+                                      ),
+                                      maxLines: 3,
+                                    ),
+                                  ),
                                   const SizedBox(height: 10),
                                   Container(
-                                    margin: const EdgeInsets.only(right: 10),
-                                    alignment: Alignment.centerRight,
-                                    child: IconButton(
-                                      alignment: Alignment.centerRight,
-                                      onPressed: () {
-                                        setState(() {
-                                          _questionController.removeAt(index);
-                                          _typeController.removeAt(index);
-                                        });
-                                      },
-                                      icon: const Icon(
-                                        Icons.delete_outline,
-                                        size: 30,
-                                        color: Colors.black54,
-                                      ),
+                                    padding: const EdgeInsets.all(10.0),
+                                    width: double.infinity,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            title: Text(
+                                              "Marked",
+                                              style: appstyle(14, Colors.black,
+                                                  FontWeight.normal),
+                                            ),
+                                            value: isMarked[index],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                isMarked[index] = newValue!;
+                                              });
+                                            },
+                                            controlAffinity: ListTileControlAffinity
+                                                .leading, //  <-- leading Checkbox
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            title: Text(
+                                              "Resolved",
+                                              style: appstyle(14, Colors.black,
+                                                  FontWeight.normal),
+                                            ),
+                                            value: isResolved[index],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                isResolved[index] = newValue!;
+                                              });
+                                            },
+                                            controlAffinity: ListTileControlAffinity
+                                                .leading, //  <-- leading Checkbox
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  )
+                                  ),
+                                  const SizedBox(height: 10),
                                 ],
                               ),
                             ),
@@ -293,9 +399,11 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
                       child: CustomButton(
                         onPress: () {
                           setState(() {
-                            _questionController.add(TextEditingController());
-                            _typeController.add(TextEditingController());
-                            _typeController.last.text = 'Short answer text';
+                            _indicatorController.add(TextEditingController());
+                            _criteriaController.add(TextEditingController());
+                            _progressController.add(TextEditingController());
+                            isMarked.add(false);
+                            isResolved.add(false);
                           });
                         },
                         label: 'Add Question',

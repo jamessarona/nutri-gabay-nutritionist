@@ -23,6 +23,10 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _findingsController = TextEditingController();
   final TextEditingController _standardsController = TextEditingController();
+  final TextEditingController _relatedHistoryController =
+      TextEditingController();
+  final TextEditingController _proceduresController = TextEditingController();
+  final TextEditingController _measurementsController = TextEditingController();
 
   bool isEditable = false;
 
@@ -41,6 +45,9 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
     assessment = docSnap.data()!;
     _findingsController.text = assessment!.findings;
     _standardsController.text = assessment!.standards;
+    _relatedHistoryController.text = assessment!.relatedHistory;
+    _proceduresController.text = assessment!.procedures;
+    _measurementsController.text = assessment!.measurements;
     isEditable = false;
     setState(() {});
   }
@@ -54,6 +61,9 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
         .update({
       'findings': _findingsController.text,
       "standards": _standardsController.text,
+      "relatedHistory": _relatedHistoryController.text,
+      "procedures": _proceduresController.text,
+      "measurements": _measurementsController.text
     });
 
     await getAssessment().whenComplete(() {
@@ -188,9 +198,6 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
                     controller: _findingsController,
                     keyboardType: TextInputType.multiline,
                     validator: (value) {
-                      if (value == '') {
-                        return 'This field is required';
-                      }
                       return null;
                     },
                     enabled: isEditable,
@@ -240,9 +247,6 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
                     controller: _standardsController,
                     keyboardType: TextInputType.multiline,
                     validator: (value) {
-                      if (value == '') {
-                        return 'This field is required';
-                      }
                       return null;
                     },
                     enabled: isEditable,
@@ -295,15 +299,29 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Text(
-                    assessment!.relatedHistory,
-                    style: appstyle(
-                      14,
-                      Colors.black,
-                      FontWeight.normal,
+                  TextFormField(
+                    controller: _relatedHistoryController,
+                    keyboardType: TextInputType.multiline,
+                    validator: (value) {
+                      return null;
+                    },
+                    enabled: isEditable,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(color: customColor),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white70,
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 10.0),
                     ),
+                    maxLines: 8,
                   ),
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
@@ -330,15 +348,29 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Text(
-                    assessment!.procedures,
-                    style: appstyle(
-                      14,
-                      Colors.black,
-                      FontWeight.normal,
+                  TextFormField(
+                    controller: _proceduresController,
+                    keyboardType: TextInputType.multiline,
+                    validator: (value) {
+                      return null;
+                    },
+                    enabled: isEditable,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(color: customColor),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white70,
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 10.0),
                     ),
+                    maxLines: 5,
                   ),
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
@@ -365,15 +397,29 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Text(
-                    assessment!.measurements,
-                    style: appstyle(
-                      14,
-                      Colors.black,
-                      FontWeight.normal,
+                  TextFormField(
+                    controller: _measurementsController,
+                    keyboardType: TextInputType.multiline,
+                    validator: (value) {
+                      return null;
+                    },
+                    enabled: isEditable,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(color: customColor),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white70,
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 10.0),
                     ),
+                    maxLines: 5,
                   ),
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
@@ -501,6 +547,11 @@ class _ViewAssessmentPageState extends State<ViewAssessmentPage> {
                         setState(() {
                           _findingsController.text = assessment!.findings;
                           _standardsController.text = assessment!.standards;
+                          _relatedHistoryController.text =
+                              assessment!.relatedHistory;
+                          _proceduresController.text = assessment!.procedures;
+                          _measurementsController.text =
+                              assessment!.measurements;
                           isEditable = false;
                         });
                       },

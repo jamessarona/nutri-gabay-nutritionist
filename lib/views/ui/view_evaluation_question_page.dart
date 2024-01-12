@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 
 class ViewEvaluationQuestionPage extends StatefulWidget {
@@ -23,8 +24,11 @@ class _ViewEvaluationQuestionPageState
   late Size screenSize;
 
   final TextEditingController _formController = TextEditingController();
-  List<TextEditingController> _questionController = [];
-  List<TextEditingController> _typeController = [];
+  List<TextEditingController> _indicatorController = [];
+  List<TextEditingController> _criteriaController = [];
+  List<TextEditingController> _progressController = [];
+  List<bool> isMarked = [];
+  List<bool> isResolved = [];
 
   @override
   void initState() {
@@ -111,14 +115,26 @@ class _ViewEvaluationQuestionPageState
                   }
 
                   if (snapshot.hasData) {
-                    _questionController = List.generate(
+                    _indicatorController = List.generate(
                         snapshot.data!.docs.length,
                         (i) => TextEditingController());
-                    _typeController = List.generate(snapshot.data!.docs.length,
+                    _criteriaController = List.generate(
+                        snapshot.data!.docs.length,
                         (i) => TextEditingController());
+                    _progressController = List.generate(
+                        snapshot.data!.docs.length,
+                        (i) => TextEditingController());
+                    isMarked =
+                        List.generate(snapshot.data!.docs.length, (i) => false);
+                    isResolved =
+                        List.generate(snapshot.data!.docs.length, (i) => false);
                   }
 
-                  int questionIndex = -1, typeIndex = -1;
+                  int indicatorIndex = -1,
+                      criteriaIndex = -1,
+                      progressIndex = -1,
+                      markedIndex = -1,
+                      resolvedIndex = -1;
 
                   return ListView(
                     scrollDirection: Axis.vertical,
@@ -136,15 +152,23 @@ class _ViewEvaluationQuestionPageState
                                 Map<String, dynamic> data =
                                     document.data()! as Map<String, dynamic>;
 
-                                questionIndex++;
-                                typeIndex++;
+                                indicatorIndex++;
+                                criteriaIndex++;
+                                progressIndex++;
+                                markedIndex++;
+                                resolvedIndex++;
 
-                                _questionController[questionIndex].text =
-                                    data['question'];
-                                _typeController[typeIndex].text = data['type'];
+                                _indicatorController[indicatorIndex].text =
+                                    data['indicator'];
+                                _criteriaController[criteriaIndex].text =
+                                    data['criteria'];
+                                _progressController[progressIndex].text =
+                                    data['progress'];
+                                isMarked[markedIndex] = data['marked'];
+                                isResolved[resolvedIndex] = data['resolved'];
 
                                 return SizedBox(
-                                  height: 200,
+                                  height: 400,
                                   child: Card(
                                     color: Colors.white,
                                     child: Column(
@@ -157,16 +181,63 @@ class _ViewEvaluationQuestionPageState
                                           margin: const EdgeInsets.only(
                                               top: 10, left: 10, right: 10),
                                           width: double.infinity,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                'Indicator ${indicatorIndex + 1}',
+                                                style: appstyle(
+                                                    14,
+                                                    Colors.black,
+                                                    FontWeight.bold),
+                                              ),
+                                              Container(
+                                                margin: const EdgeInsets.only(
+                                                    right: 10),
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      _indicatorController
+                                                          .removeAt(
+                                                              indicatorIndex);
+                                                      _criteriaController
+                                                          .removeAt(
+                                                              indicatorIndex);
+                                                      _progressController
+                                                          .removeAt(
+                                                              indicatorIndex);
+                                                      isMarked.removeAt(
+                                                          indicatorIndex);
+                                                      isResolved.removeAt(
+                                                          indicatorIndex);
+                                                    });
+                                                  },
+                                                  child: const Icon(
+                                                    FontAwesomeIcons.xmark,
+                                                    size: 30,
+                                                    color: Colors.black54,
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                        Container(
+                                          margin: const EdgeInsets.only(
+                                              top: 5, left: 10, right: 10),
+                                          width: double.infinity,
                                           child: TextFormField(
-                                            controller: _questionController[
-                                                questionIndex],
+                                            controller: _indicatorController[
+                                                criteriaIndex],
                                             keyboardType: TextInputType.text,
                                             style: appstyle(14, Colors.black,
                                                 FontWeight.normal),
-                                            enabled: false,
                                             validator: (value) {
                                               if (value == '') {
-                                                return 'Please enter the question';
+                                                return 'Please enter the indicator';
                                               }
                                               return null;
                                             },
@@ -179,8 +250,7 @@ class _ViewEvaluationQuestionPageState
                                                 borderSide: BorderSide.none,
                                               ),
                                               filled: true,
-                                              hintText:
-                                                  'Question ${questionIndex + 1}',
+                                              hintText: 'Input the indicator',
                                               hintStyle: appstyle(
                                                   14,
                                                   Colors.black,
@@ -196,21 +266,28 @@ class _ViewEvaluationQuestionPageState
                                         Container(
                                           margin: const EdgeInsets.only(
                                               top: 10, left: 10, right: 10),
+                                          child: Text(
+                                            'Criteria ${criteriaIndex + 1}',
+                                            style: appstyle(14, Colors.black,
+                                                FontWeight.bold),
+                                          ),
+                                        ),
+                                        Container(
+                                          margin: const EdgeInsets.only(
+                                              top: 5, left: 10, right: 10),
                                           width: double.infinity,
                                           child: TextFormField(
-                                            controller:
-                                                _typeController[typeIndex],
-                                            keyboardType: TextInputType.none,
+                                            controller: _criteriaController[
+                                                criteriaIndex],
+                                            keyboardType: TextInputType.text,
                                             style: appstyle(14, Colors.black,
                                                 FontWeight.normal),
                                             validator: (value) {
                                               if (value == '') {
-                                                return 'Select the question type';
+                                                return 'Please enter the criteria';
                                               }
                                               return null;
                                             },
-                                            enabled: false,
-                                            readOnly: true,
                                             decoration: InputDecoration(
                                               border: const OutlineInputBorder(
                                                 borderSide: BorderSide.none,
@@ -219,28 +296,8 @@ class _ViewEvaluationQuestionPageState
                                                   const OutlineInputBorder(
                                                 borderSide: BorderSide.none,
                                               ),
-                                              suffixIcon:
-                                                  PopupMenuButton<String>(
-                                                icon: const Icon(
-                                                    Icons.arrow_drop_down),
-                                                onSelected: (String value) {
-                                                  _typeController[typeIndex]
-                                                      .text = value;
-                                                },
-                                                itemBuilder:
-                                                    (BuildContext context) {
-                                                  return [
-                                                    "Short answer text",
-                                                    "Image"
-                                                  ].map<PopupMenuItem<String>>(
-                                                      (String value) {
-                                                    return PopupMenuItem(
-                                                        value: value,
-                                                        child: Text(value));
-                                                  }).toList();
-                                                },
-                                              ),
                                               filled: true,
+                                              hintText: 'Input the criteria',
                                               hintStyle: appstyle(
                                                   14,
                                                   Colors.black,
@@ -251,36 +308,109 @@ class _ViewEvaluationQuestionPageState
                                                       vertical: 0,
                                                       horizontal: 5),
                                             ),
+                                          ),
+                                        ),
+                                        Container(
+                                          margin: const EdgeInsets.only(
+                                              top: 10, left: 10, right: 10),
+                                          child: Text(
+                                            'Progress Notes',
+                                            style: appstyle(14, Colors.black,
+                                                FontWeight.bold),
+                                          ),
+                                        ),
+                                        Container(
+                                          margin: const EdgeInsets.only(
+                                              top: 10, left: 10, right: 10),
+                                          child: TextFormField(
+                                            controller: _progressController[
+                                                progressIndex],
+                                            keyboardType:
+                                                TextInputType.multiline,
+                                            validator: (value) {
+                                              return null;
+                                            },
+                                            enabled: true,
+                                            decoration: InputDecoration(
+                                              hintText: 'Input the progress',
+                                              hintStyle: appstyle(
+                                                  14,
+                                                  Colors.black,
+                                                  FontWeight.normal),
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                borderSide: const BorderSide(
+                                                    color: customColor),
+                                              ),
+                                              filled: true,
+                                              fillColor: Colors.white70,
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 10.0,
+                                                      horizontal: 10.0),
+                                            ),
+                                            maxLines: 3,
                                           ),
                                         ),
                                         const SizedBox(height: 10),
                                         Container(
-                                          margin: const EdgeInsets.only(
-                                              top: 10, left: 10, right: 10),
+                                          padding: const EdgeInsets.all(10.0),
+                                          width: double.infinity,
                                           child: Row(
                                             children: [
-                                              Text(
-                                                "Answer: ",
-                                                style: appstyle(
-                                                    14,
-                                                    Colors.black,
-                                                    FontWeight.normal),
-                                              ),
-                                              const SizedBox(width: 5),
-                                              Text(
-                                                data['answer'],
-                                                style: appstyle(
+                                              Expanded(
+                                                child: CheckboxListTile(
+                                                  title: Text(
+                                                    "Marked",
+                                                    style: appstyle(
                                                         14,
                                                         Colors.black,
-                                                        FontWeight.bold)
-                                                    .copyWith(
-                                                  decoration:
-                                                      TextDecoration.underline,
+                                                        FontWeight.normal),
+                                                  ),
+                                                  value: isMarked[markedIndex],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      isMarked[markedIndex] =
+                                                          newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity:
+                                                      ListTileControlAffinity
+                                                          .leading, //  <-- leading Checkbox
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: CheckboxListTile(
+                                                  title: Text(
+                                                    "Resolved",
+                                                    style: appstyle(
+                                                        14,
+                                                        Colors.black,
+                                                        FontWeight.normal),
+                                                  ),
+                                                  value:
+                                                      isResolved[resolvedIndex],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      isResolved[
+                                                              resolvedIndex] =
+                                                          newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity:
+                                                      ListTileControlAffinity
+                                                          .leading, //  <-- leading Checkbox
                                                 ),
                                               ),
                                             ],
                                           ),
-                                        )
+                                        ),
+                                        const SizedBox(height: 10),
                                       ],
                                     ),
                                   ),
