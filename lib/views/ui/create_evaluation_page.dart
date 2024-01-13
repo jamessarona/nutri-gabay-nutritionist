@@ -340,23 +340,23 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
                                     width: double.infinity,
                                     child: Row(
                                       children: [
-                                        Expanded(
-                                          child: CheckboxListTile(
-                                            title: Text(
-                                              "Marked",
-                                              style: appstyle(14, Colors.black,
-                                                  FontWeight.normal),
-                                            ),
-                                            value: isMarked[index],
-                                            onChanged: (newValue) {
-                                              setState(() {
-                                                isMarked[index] = newValue!;
-                                              });
-                                            },
-                                            controlAffinity: ListTileControlAffinity
-                                                .leading, //  <-- leading Checkbox
-                                          ),
-                                        ),
+                                        // Expanded(
+                                        //   child: CheckboxListTile(
+                                        //     title: Text(
+                                        //       "Marked",
+                                        //       style: appstyle(14, Colors.black,
+                                        //           FontWeight.normal),
+                                        //     ),
+                                        //     value: isMarked[index],
+                                        //     onChanged: (newValue) {
+                                        //       setState(() {
+                                        //         isMarked[index] = newValue!;
+                                        //       });
+                                        //     },
+                                        //     controlAffinity: ListTileControlAffinity
+                                        //         .leading, //  <-- leading Checkbox
+                                        //   ),
+                                        // ),
                                         Expanded(
                                           child: CheckboxListTile(
                                             title: Text(
