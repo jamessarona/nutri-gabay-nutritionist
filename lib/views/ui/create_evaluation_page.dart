@@ -406,7 +406,7 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
                             isResolved.add(false);
                           });
                         },
-                        label: 'Add Question',
+                        label: 'Add Indicator',
                         labelSize: 15,
                         radius: 5,
                       ),
@@ -417,7 +417,7 @@ class _CreateEvaluationPageState extends State<CreateEvaluationPage> {
                         onPress: () {
                           saveForm();
                         },
-                        label: 'Save Form',
+                        label: 'Save',
                         labelSize: 15,
                         radius: 5,
                       ),

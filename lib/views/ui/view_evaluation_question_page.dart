@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:nutri_gabay_nutritionist/models/question.dart';
 import 'package:nutri_gabay_nutritionist/views/shared/app_style.dart';
 
 class ViewEvaluationQuestionPage extends StatefulWidget {
@@ -29,6 +30,37 @@ class _ViewEvaluationQuestionPageState
   List<TextEditingController> _progressController = [];
   List<bool> isMarked = [];
   List<bool> isResolved = [];
+
+  Future<void> getQuestions() async {
+    final collection = FirebaseFirestore.instance
+        .collection('appointment')
+        .doc(widget.appointmentId)
+        .collection('form')
+        .doc(widget.formId)
+        .collection('questions')
+        .withConverter(
+          fromFirestore: Question.fromFirestore,
+          toFirestore: (Question question, _) => question.toFirestore(),
+        );
+
+    await collection.get().then(
+      (querySnapshot) {
+        _indicatorController = List.generate(
+            querySnapshot.docs.length, (i) => TextEditingController());
+        _criteriaController = List.generate(
+            snapshot.data!.docs.length, (i) => TextEditingController());
+        _progressController = List.generate(
+            snapshot.data!.docs.length, (i) => TextEditingController());
+        isMarked = List.generate(snapshot.data!.docs.length, (i) => false);
+        isResolved = List.generate(snapshot.data!.docs.length, (i) => false);
+        for (var docSnapshot in querySnapshot.docs) {
+          nutritionProfile = docSnapshot.data();
+          hasData = nutritionProfile != null;
+          setState(() {});
+        }
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -114,21 +146,21 @@ class _ViewEvaluationQuestionPageState
                     return const Text('No Records');
                   }
 
-                  if (snapshot.hasData) {
-                    _indicatorController = List.generate(
-                        snapshot.data!.docs.length,
-                        (i) => TextEditingController());
-                    _criteriaController = List.generate(
-                        snapshot.data!.docs.length,
-                        (i) => TextEditingController());
-                    _progressController = List.generate(
-                        snapshot.data!.docs.length,
-                        (i) => TextEditingController());
-                    isMarked =
-                        List.generate(snapshot.data!.docs.length, (i) => false);
-                    isResolved =
-                        List.generate(snapshot.data!.docs.length, (i) => false);
-                  }
+                  // if (snapshot.hasData) {
+                  //   _indicatorController = List.generate(
+                  //       snapshot.data!.docs.length,
+                  //       (i) => TextEditingController());
+                  //   _criteriaController = List.generate(
+                  //       snapshot.data!.docs.length,
+                  //       (i) => TextEditingController());
+                  //   _progressController = List.generate(
+                  //       snapshot.data!.docs.length,
+                  //       (i) => TextEditingController());
+                  //   isMarked =
+                  //       List.generate(snapshot.data!.docs.length, (i) => false);
+                  //   isResolved =
+                  //       List.generate(snapshot.data!.docs.length, (i) => false);
+                  // }
 
                   int indicatorIndex = -1,
                       criteriaIndex = -1,
